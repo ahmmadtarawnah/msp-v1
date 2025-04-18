@@ -3,6 +3,129 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Navbar from "../shared/Navbar";
+import Footer from "../shared/Footer";
+
+const LegalAidLogo = ({ size = "normal", color = "#DECEB0", hoverColor = "#ffffff" }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const sizeClasses = {
+    small: "h-6 w-6",
+    normal: "h-10 w-10",
+    large: "h-12 w-12",
+  };
+
+  return (
+    <div
+      className={`${sizeClasses[size]} relative cursor-pointer transition-all duration-300 transform ${
+        isHovered ? "scale-110" : ""
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full transition-all duration-300"
+      >
+        <circle
+          cx="12"
+          cy="4"
+          r="1.5"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${isHovered ? "animate-pulse" : ""}`}
+        />
+        <rect
+          x="11.5"
+          y="4"
+          width="1"
+          height="10"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${isHovered ? "animate-pulse" : ""}`}
+        />
+        <path
+          d="M8 20h8l-1-2H9l-1 2z"
+          fill={isHovered ? hoverColor : color}
+          className="transition-all duration-300"
+        />
+        <rect
+          x="11.5"
+          y="14"
+          width="1"
+          height="4"
+          fill={isHovered ? hoverColor : color}
+          className="transition-all duration-300"
+        />
+        <circle
+          cx="7"
+          cy="10"
+          r="2.5"
+          fill="transparent"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-500 ${
+            isHovered ? "transform translate-y-1" : ""
+          }`}
+        />
+        <circle
+          cx="17"
+          cy="10"
+          r="2.5"
+          fill="transparent"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-500 ${
+            isHovered ? "transform -translate-y-1" : ""
+          }`}
+        />
+        <line
+          x1="12"
+          y1="4"
+          x2="7"
+          y2="10"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-300 ${
+            isHovered ? "transform rotate-3" : ""
+          }`}
+        />
+        <line
+          x1="12"
+          y1="4"
+          x2="17"
+          y2="10"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-300 ${
+            isHovered ? "transform -rotate-3" : ""
+          }`}
+        />
+        <circle
+          cx="7"
+          cy="10"
+          r="0.5"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${
+            isHovered ? "opacity-100" : "opacity-70"
+          }`}
+        />
+        <circle
+          cx="17"
+          cy="10"
+          r="0.5"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${
+            isHovered ? "opacity-100" : "opacity-70"
+          }`}
+        />
+      </svg>
+      {isHovered && (
+        <div className="absolute inset-0 rounded-full bg-[#DECEB0] opacity-20 blur-md -z-10"></div>
+      )}
+    </div>
+  );
+};
 
 const BecomeAlawyer = () => {
   const { authData, isLoading } = useAuth();
@@ -100,7 +223,6 @@ const BecomeAlawyer = () => {
         icon: "success",
         confirmButtonColor: "#2B3B3A"
       }).then(() => {
-        // Redirect to admin dashboard if the user is an admin
         if (authData.role === "admin") {
           navigate("/admin-dashboard");
         } else {
@@ -122,8 +244,8 @@ const BecomeAlawyer = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#2B3B3A]"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2B3B3A] to-[#1A2A29]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#DECEB0]"></div>
       </div>
     );
   }
@@ -133,124 +255,128 @@ const BecomeAlawyer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
-          <div className="px-6 py-8">
-            <h2 className="text-3xl font-bold text-center text-[#2B3B3A] mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#2B3B3A] to-[#1A2A29]">
+      <Navbar />
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex justify-center mb-6">
+              <LegalAidLogo size="large" />
+            </div>
+            <h2 className="text-4xl font-bold text-[#DECEB0] mb-4">
               Become a Lawyer
             </h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Bar Number */}
-              <div>
-                <label htmlFor="barNumber" className="block text-sm font-medium text-gray-700">
-                  Bar Number
-                </label>
-                <input
-                  type="text"
-                  id="barNumber"
-                  name="barNumber"
-                  value={formData.barNumber}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#DECEB0] focus:ring-[#DECEB0] sm:text-sm"
-                />
-              </div>
+            <p className="text-[#DECEB0]/80 text-lg">
+              Join our network of legal professionals and make a difference
+            </p>
+          </div>
+          
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden">
+            <div className="px-6 py-8">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Bar Number */}
+                <div>
+                  <label htmlFor="barNumber" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                    Bar Number
+                  </label>
+                  <input
+                    type="text"
+                    id="barNumber"
+                    name="barNumber"
+                    value={formData.barNumber}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300"
+                    placeholder="Enter your bar number"
+                  />
+                </div>
 
-              {/* Years of Experience */}
-              <div>
-                <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700">
-                  Years of Experience
-                </label>
-                <input
-                  type="number"
-                  id="yearsOfExperience"
-                  name="yearsOfExperience"
-                  value={formData.yearsOfExperience}
-                  onChange={handleChange}
-                  required
-                  min="0"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#DECEB0] focus:ring-[#DECEB0] sm:text-sm"
-                />
-              </div>
+                {/* Years of Experience */}
+                <div>
+                  <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                    Years of Experience
+                  </label>
+                  <input
+                    type="number"
+                    id="yearsOfExperience"
+                    name="yearsOfExperience"
+                    value={formData.yearsOfExperience}
+                    onChange={handleChange}
+                    required
+                    min="0"
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300"
+                    placeholder="Enter years of experience"
+                  />
+                </div>
 
-              {/* Specialization */}
-              <div>
-                <label htmlFor="specialization" className="block text-sm font-medium text-gray-700">
-                  Specialization
-                </label>
-                <select
-                  id="specialization"
-                  name="specialization"
-                  value={formData.specialization}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#DECEB0] focus:ring-[#DECEB0] sm:text-sm"
-                >
-                  <option value="">Select a specialization</option>
-                  {specializations.map((spec) => (
-                    <option key={spec} value={spec}>
-                      {spec}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                {/* Specialization */}
+                <div>
+                  <label htmlFor="specialization" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                    Specialization
+                  </label>
+                  <select
+                    id="specialization"
+                    name="specialization"
+                    value={formData.specialization}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300"
+                  >
+                    <option value="" className="bg-[#2B3B3A]">Select a specialization</option>
+                    {specializations.map((spec) => (
+                      <option key={spec} value={spec} className="bg-[#2B3B3A]">
+                        {spec}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Certification Picture */}
-              <div>
-                <label htmlFor="certificationPic" className="block text-sm font-medium text-gray-700">
-                  Certification Picture
-                </label>
-                <input
-                  type="file"
-                  id="certificationPic"
-                  accept="image/*"
-                  onChange={(e) => handleFileChange(e, "certification")}
-                  required
-                  className="mt-1 block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-md file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-[#DECEB0] file:text-[#2B3B3A]
-                    hover:file:bg-[#d0c09f]"
-                />
-              </div>
+                {/* Certification Picture */}
+                <div>
+                  <label htmlFor="certificationPic" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                    Certification Picture
+                  </label>
+                  <input
+                    type="file"
+                    id="certificationPic"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, "certification")}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#DECEB0] file:text-[#2B3B3A] hover:file:bg-[#d0c09f]"
+                  />
+                </div>
 
-              {/* Personal Picture */}
-              <div>
-                <label htmlFor="personalPic" className="block text-sm font-medium text-gray-700">
-                  Personal Picture
-                </label>
-                <input
-                  type="file"
-                  id="personalPic"
-                  accept="image/*"
-                  onChange={(e) => handleFileChange(e, "personal")}
-                  required
-                  className="mt-1 block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-md file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-[#DECEB0] file:text-[#2B3B3A]
-                    hover:file:bg-[#d0c09f]"
-                />
-              </div>
+                {/* Personal Picture */}
+                <div>
+                  <label htmlFor="personalPic" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                    Personal Picture
+                  </label>
+                  <input
+                    type="file"
+                    id="personalPic"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, "personal")}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#DECEB0] file:text-[#2B3B3A] hover:file:bg-[#d0c09f]"
+                  />
+                </div>
 
-              {/* Submit Button */}
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full sm:w-auto px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-[#2B3B3A] hover:bg-[#1a2a29] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#DECEB0] disabled:opacity-50"
-                >
-                  {loading ? "Submitting..." : "Submit Application"}
-                </button>
-              </div>
-            </form>
+                {/* Submit Button */}
+                <div className="flex justify-center">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full sm:w-auto px-8 py-4 border border-transparent rounded-lg text-lg font-bold text-[#2B3B3A] bg-[#DECEB0] hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#DECEB0] disabled:opacity-50 transition-all duration-300 transform hover:scale-105"
+                  >
+                    {loading ? "Submitting..." : "Submit Application"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
