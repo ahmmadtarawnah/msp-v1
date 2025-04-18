@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext"; // Ensure this import is correct
+import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -13,8 +13,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Ensure this 'register' function is calling the correct API endpoint
-      await register(name, username, password); // Ensure the function is working properly
+      await register(name, username, password);
       Swal.fire({
         icon: "success",
         title: "Registration Successful",
@@ -22,7 +21,7 @@ const Signup = () => {
         confirmButtonText: "Go to Login",
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate("/Login"); // Navigate to login page after successful registration
+          navigate("/Login");
         }
       });
     } catch (error) {
@@ -95,7 +94,7 @@ const Signup = () => {
                   placeholder="Choose a username"
                 />
               </div>
-              <div>
+              <div className="mb-4">
                 <label
                   htmlFor="password"
                   className="block text-[#DECEB0] text-sm font-semibold mb-2"

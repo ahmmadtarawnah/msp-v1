@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext"; // Importing useAuth hook
-import { useNavigate } from "react-router-dom"; // Importing useNavigate for navigation
+import { useNavigate, Link } from "react-router-dom"; // Importing useNavigate and Link for navigation
 import Swal from "sweetalert2"; // Import SweetAlert2
 
 // Add import for LegalAidLogo component
@@ -203,60 +203,70 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {/* Conditionally render the "Become a Lawyer" button */}
-            {authData && authData.role === "user" && (
-              <button
-                onClick={handleBecomeLawyer}
-                className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-              >
-                Become a Lawyer
-              </button>
-            )}
+            {/* Show different options based on role */}
             {authData && (
-              <a
-                href="/Booking"
-                className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-              >
-                Book Session
-              </a>
+              <>
+                {authData.role === "lawyer" && (
+                  <Link
+                    to="/lawyer-dashboard"
+                    className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
+                  >
+                    Lawyer Dashboard
+                  </Link>
+                )}
+                {authData.role === "admin" && (
+                  <Link
+                    to="/admin-dashboard"
+                    className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
+                <Link
+                  to="/Booking"
+                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
+                >
+                  Book Session
+                </Link>
+                <Link
+                  to="#blogs"
+                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
+                >
+                  Blogs
+                </Link>
+                <Link
+                  to="#about"
+                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
+                >
+                  About
+                </Link>
+                <Link
+                  to="/Contact"
+                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
+                >
+                  Contact
+                </Link>
+              </>
             )}
-            <a
-              href="#blogs"
-              className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-            >
-              Blogs
-            </a>
-            <a
-              href="#about"
-              className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-            >
-              About
-            </a>
-            <a
-              href="/Contact"
-              className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-            >
-              Contact
-            </a>
 
             {/* Conditionally render Login or Profile and Logout buttons */}
             {!authData ? (
-              <a
-                href="/Login"
+              <Link
+                to="/Login"
                 className="bg-[#2B3B3A] text-[#DECEB0] px-5 py-2 rounded hover:bg-[#1a2a29] transition-colors duration-300 font-medium text-lg"
               >
                 Login
-              </a>
+              </Link>
             ) : (
               <>
-                <a
-                  href="/Profile"
+                <Link
+                  to="/Profile"
                   className="text-[#2B3B3A] font-medium text-lg"
                 >
                   Profile
-                </a>
+                </Link>
                 <button
-                  onClick={handleLogout} // Call handleLogout to log out and redirect
+                  onClick={handleLogout}
                   className="bg-[#2B3B3A] text-[#DECEB0] px-5 py-2 rounded hover:bg-[#1a2a29] transition-colors duration-300 font-medium text-lg"
                 >
                   Logout
@@ -306,48 +316,68 @@ const Navbar = () => {
         }`}
       >
         <div className="px-4 pt-2 pb-4 space-y-4">
-          <a
-            href="#book"
-            className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-          >
-            Book Session
-          </a>
-          <a
-            href="#blogs"
-            className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-          >
-            Blogs
-          </a>
-          <a
-            href="#about"
-            className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-          >
-            About
-          </a>
-          <a
-            href="#contact"
-            className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-          >
-            Contact
-          </a>
+          {authData && (
+            <>
+              {authData.role === "lawyer" && (
+                <Link
+                  to="/lawyer-dashboard"
+                  className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
+                >
+                  Lawyer Dashboard
+                </Link>
+              )}
+              {authData.role === "admin" && (
+                <Link
+                  to="/admin-dashboard"
+                  className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+              <Link
+                to="/Booking"
+                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
+              >
+                Book Session
+              </Link>
+              <Link
+                to="#blogs"
+                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
+              >
+                Blogs
+              </Link>
+              <Link
+                to="#about"
+                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
+              >
+                About
+              </Link>
+              <Link
+                to="/Contact"
+                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
+              >
+                Contact
+              </Link>
+            </>
+          )}
           {!authData ? (
-            <a
-              href="/Login"
+            <Link
+              to="/Login"
               className="block py-2 px-3 bg-[#2B3B3A] text-[#DECEB0] font-medium text-lg rounded-md hover:bg-[#1a2a29] transition-colors"
             >
               Login
-            </a>
+            </Link>
           ) : (
             <>
-              <a
-                href="/profile"
-                className="block py-2 text-[#2B3B3A] font-medium text-lg"
+              <Link
+                to="/Profile"
+                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
               >
                 Profile
-              </a>
+              </Link>
               <button
                 onClick={handleLogout}
-                className="block py-2 px-3 bg-[#2B3B3A] text-[#DECEB0] font-medium text-lg rounded-md hover:bg-[#1a2a29] transition-colors"
+                className="block w-full text-left py-2 px-3 bg-[#2B3B3A] text-[#DECEB0] font-medium text-lg rounded-md hover:bg-[#1a2a29] transition-colors"
               >
                 Logout
               </button>

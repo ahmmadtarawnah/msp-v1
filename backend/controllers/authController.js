@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 
 const registerUser = async (req, res) => {
-  const { name, username, password } = req.body;
+  const { name, username, password, role } = req.body;
 
   try {
     const userExists = await User.findOne({ username });
@@ -16,19 +16,22 @@ const registerUser = async (req, res) => {
       name,
       username,
       password: hashedPassword,
-      role: "user",
+      role: role || "user", // Default to user if no role specified
     });
 
     await newUser.save();
 
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1D", // token expires in 1 day
-    });
+    const token = jwt.sign(
+      { userId: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1D" }
+    );
 
     res.status(201).json({
       token,
       name: newUser.name,
-      email: newUser.username,
+      username: newUser.username,
+      role: newUser.role,
     });
   } catch (error) {
     console.error("Error during registration:", error);
@@ -50,20 +53,24 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1D", // token expires in 1 day
-    });
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1D" }
+    );
 
     res.status(200).json({
       token,
       name: user.name,
-      email: user.email,
+      username: user.username,
+      role: user.role,
     });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Server error during login" });
   }
 };
+
 const authenticate = (req, res, next) => {
   const token = req.headers["authorization"]?.split(" ")[1];
   if (!token) {
@@ -75,8 +82,25 @@ const authenticate = (req, res, next) => {
       return res.status(403).json({ message: "Invalid Token" });
     }
     req.userId = decoded.userId;
-    next(); // Continue with the next middleware or route handler
+    req.userRole = decoded.role;
+    next();
   });
+};
+
+// Middleware to check if user has admin role
+const isAdmin = (req, res, next) => {
+  if (req.userRole !== "admin") {
+    return res.status(403).json({ message: "Access Denied: Admin Only" });
+  }
+  next();
+};
+
+// Middleware to check if user has lawyer role
+const isLawyer = (req, res, next) => {
+  if (req.userRole !== "lawyer") {
+    return res.status(403).json({ message: "Access Denied: Lawyer Only" });
+  }
+  next();
 };
 
 // Update user profile (name, email, and password)
@@ -92,7 +116,7 @@ const updateUserProfile = async (req, res) => {
 
     // Update name and username
     if (name) user.name = name;
-    if (username) user.username = username; // Update username
+    if (username) user.username = username;
 
     // Update password if provided
     if (password) {
@@ -108,5 +132,11 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-
-module.exports = { registerUser, loginUser, authenticate, updateUserProfile };
+module.exports = {
+  registerUser,
+  loginUser,
+  authenticate,
+  updateUserProfile,
+  isAdmin,
+  isLawyer,
+};
