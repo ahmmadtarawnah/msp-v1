@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }) => {
       });
       const newAuthData = {
         token,
+        userId: response.data._id,
         name: response.data.name,
         username: response.data.username,
         role: response.data.role
@@ -73,8 +74,8 @@ export const AuthProvider = ({ children }) => {
           role: "user"
         }
       );
-      const { token, name: userName, username: userUsername, role: userRole } = response.data;
-      const newAuthData = { token, name: userName, username: userUsername, role: userRole };
+      const { token, name: userName, username: userUsername, role: userRole, _id: userId } = response.data;
+      const newAuthData = { token, userId, name: userName, username: userUsername, role: userRole };
       Cookies.set("token", token, { expires: 1 });
       localStorage.setItem("authData", JSON.stringify(newAuthData));
       setAuthData(newAuthData);
@@ -94,8 +95,8 @@ export const AuthProvider = ({ children }) => {
           password,
         }
       );
-      const { token, name, username: userUsername, role } = response.data;
-      const newAuthData = { token, name, username: userUsername, role };
+      const { token, name, username: userUsername, role, _id: userId } = response.data;
+      const newAuthData = { token, userId, name, username: userUsername, role };
       Cookies.set("token", token, { expires: 1 });
       localStorage.setItem("authData", JSON.stringify(newAuthData));
       setAuthData(newAuthData);
@@ -118,8 +119,16 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common["Authorization"] = "";
   };
 
+  const value = {
+    authData,
+    isLoading,
+    login,
+    logout,
+    register
+  };
+
   return (
-    <AuthContext.Provider value={{ authData, isLoading, login, logout, register }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

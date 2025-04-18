@@ -18,6 +18,7 @@ import Signup from "./pages/Signup";
 import Booking from "./pages/Booking";
 import Profile from "./pages/Profile"; // Import Profile page
 import AdminDashboard from "./pages/AdminDashboard";
+import BecomeAlawyer from "./pages/BecomeAlawyer"; // Import Become a Lawyer page
 
 import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 
@@ -45,7 +46,8 @@ const AppRoutes = ({ loading }) => {
 
   const isLoginPage = location.pathname === "/Login";
   const isSignupPage = location.pathname === "/Signup";
-  const isAdminDashboard = location.pathname === "/admin-dashboard";
+  const isAdminDashboard = location.pathname.startsWith("/admin-dashboard");
+  const isBecomeLawyerPage = location.pathname === "/become-a-lawyer";
 
   if (loading || isLoading) {
     return <Loader />;
@@ -54,7 +56,7 @@ const AppRoutes = ({ loading }) => {
   return (
     <>
       {/* Navbar is hidden on Login, Signup, and Admin Dashboard pages */}
-      {!isLoginPage && !isSignupPage && !isAdminDashboard && <Navbar />}
+      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isBecomeLawyerPage && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -63,11 +65,12 @@ const AppRoutes = ({ loading }) => {
         <Route path="/Signup" element={<Signup />} />
         <Route path="/Booking" element={<Booking />} />
         <Route path="/Profile" element={<Profile />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
+        <Route path="/become-a-lawyer" element={<BecomeAlawyer />} />
       </Routes>
 
       {/* Footer is hidden on Login, Signup, and Admin Dashboard pages */}
-      {!isLoginPage && !isSignupPage && !isAdminDashboard && <Footer />}
+      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isBecomeLawyerPage && <Footer />}
     </>
   );
 };

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Routes, Route, Outlet } from "react-router-dom";
 import Swal from "sweetalert2";
+import AdminSidebar from "../components/AdminSidebar";
+import LawyerApplications from "../components/LawyerApplications";
 
 const AdminDashboard = () => {
   const { authData, logout } = useAuth();
@@ -121,88 +123,106 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-[#333]">Admin Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-[#2B3B3A] hover:bg-[#1a2a29] text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"
-          >
-            Logout
-          </button>
-        </div>
-
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <h3 className="text-lg font-semibold text-[#333]">Total Users</h3>
-            <p className="text-3xl font-bold text-[#2B3B3A]">{stats.totalUsers}</p>
-          </div>
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <h3 className="text-lg font-semibold text-[#333]">Total Lawyers</h3>
-            <p className="text-3xl font-bold text-[#2B3B3A]">{stats.totalLawyers}</p>
-          </div>
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <h3 className="text-lg font-semibold text-[#333]">Total Admins</h3>
-            <p className="text-3xl font-bold text-[#2B3B3A]">{stats.totalAdmins}</p>
+    <div className="flex h-screen bg-[#f5f5f5]">
+      <AdminSidebar />
+      
+      <div className="flex-1 ml-64">
+        {/* Top Navigation Bar */}
+        <div className="bg-white shadow-sm">
+          <div className="flex justify-between items-center px-6 py-4">
+            <h1 className="text-2xl font-bold text-[#2B3B3A]">Admin Dashboard</h1>
+            <button
+              onClick={handleLogout}
+              className="bg-[#2B3B3A] hover:bg-[#1a2a29] text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300"
+            >
+              Logout
+            </button>
           </div>
         </div>
 
-        {/* Users Table */}
-        <div className="bg-white rounded-lg p-6 shadow-md">
-          <h2 className="text-2xl font-bold text-[#333] mb-6">User Management</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Username
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                      {user.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                      {user.username}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleUpdateRole(user._id, e.target.value)}
-                        className="bg-gray-50 text-gray-900 rounded-md px-2 py-1 border border-gray-300"
-                      >
-                        <option value="user">User</option>
-                        <option value="lawyer">Lawyer</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleDeleteUser(user._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {/* Main Content */}
+        <div className="p-6">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  {/* Statistics Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-white rounded-lg p-6 shadow-md">
+                      <h3 className="text-lg font-semibold text-[#333]">Total Users</h3>
+                      <p className="text-3xl font-bold text-[#2B3B3A]">{stats.totalUsers}</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-6 shadow-md">
+                      <h3 className="text-lg font-semibold text-[#333]">Total Lawyers</h3>
+                      <p className="text-3xl font-bold text-[#2B3B3A]">{stats.totalLawyers}</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-6 shadow-md">
+                      <h3 className="text-lg font-semibold text-[#333]">Total Admins</h3>
+                      <p className="text-3xl font-bold text-[#2B3B3A]">{stats.totalAdmins}</p>
+                    </div>
+                  </div>
+
+                  {/* Users Table */}
+                  <div className="bg-white rounded-lg p-6 shadow-md">
+                    <h2 className="text-2xl font-bold text-[#333] mb-6">User Management</h2>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Name
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Username
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Role
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {users.map((user) => (
+                            <tr key={user._id}>
+                              <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                {user.name}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                {user.username}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <select
+                                  value={user.role}
+                                  onChange={(e) => handleUpdateRole(user._id, e.target.value)}
+                                  className="bg-gray-50 text-gray-900 rounded-md px-2 py-1 border border-gray-300"
+                                >
+                                  <option value="user">User</option>
+                                  <option value="lawyer">Lawyer</option>
+                                  <option value="admin">Admin</option>
+                                </select>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button
+                                  onClick={() => handleDeleteUser(user._id)}
+                                  className="text-red-600 hover:text-red-900"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </>
+              }
+            />
+            <Route path="/applications" element={<LawyerApplications />} />
+          </Routes>
         </div>
       </div>
     </div>

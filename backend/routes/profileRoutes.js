@@ -6,17 +6,17 @@ const { updateUserProfile } = require("../controllers/authController");
 const router = express.Router();
 
 // Get user profile
-// Get user profile
-router.get("/profile", authenticate, async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password"); // Exclude password
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({
+      _id: user._id,
       name: user.name,
-      username: user.username, // Send username instead of email
-      role: user.role,
+      username: user.username,
+      role: user.role
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);
@@ -24,6 +24,6 @@ router.get("/profile", authenticate, async (req, res) => {
   }
 });
 
+router.put("/", authenticate, updateUserProfile);
 
-router.put("/Profile", authenticate, updateUserProfile);
 module.exports = router;

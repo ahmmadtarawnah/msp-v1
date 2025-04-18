@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MP4Video from "../assets/law-video.mp4";
+import { Link } from "react-router-dom";
 
 // Custom Logo Component with animation
 const LegalAidLogo = ({
@@ -231,12 +232,12 @@ const Home = () => {
               >
                 Book a Consultation
               </a>
-              <a
-                href="BecomeAlawyer"
+              <Link
+                to="/become-a-lawyer"
                 className="bg-transparent hover:bg-[#2B3B3A] text-[#DECEB0] font-semibold text-lg py-3 px-8 rounded-md border-2 border-[#DECEB0] hover:border-[#2B3B3A] transition-all duration-300 inline-flex items-center justify-center"
               >
                 Become a Lawyer
-              </a>
+              </Link>
             </div>
           </div>
         </div>
