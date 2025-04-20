@@ -7,7 +7,7 @@ const submitApplication = async (req, res) => {
     console.log("Request body:", req.body);
     console.log("Request files:", req.files);
     
-    const { userId, barNumber, yearsOfExperience, specialization } = req.body;
+    const { userId, barNumber, yearsOfExperience, specialization, about, hourlyRate, halfHourlyRate } = req.body;
     
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
@@ -34,6 +34,9 @@ const submitApplication = async (req, res) => {
       barNumber,
       yearsOfExperience,
       specialization,
+      about,
+      hourlyRate,
+      halfHourlyRate,
       certificationPic: req.files.certificationPic[0].filename,
       personalPic: req.files.personalPic[0].filename
     });
@@ -115,9 +118,28 @@ const updateApplicationStatus = async (req, res) => {
   }
 };
 
+// Get application by user ID
+const getApplicationByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const application = await LawyerApplication.findOne({ userId })
+      .populate("userId", "name username");
+
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    res.status(200).json(application);
+  } catch (error) {
+    console.error("Error fetching application:", error);
+    res.status(500).json({ message: "Server error while fetching application" });
+  }
+};
+
 module.exports = {
   submitApplication,
   getAllApplications,
   getApplicationById,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getApplicationByUserId
 }; 

@@ -134,6 +134,9 @@ const BecomeAlawyer = () => {
     barNumber: "",
     yearsOfExperience: "",
     specialization: "",
+    about: "",
+    hourlyRate: "",
+    halfHourlyRate: ""
   });
   const [certificationPic, setCertificationPic] = useState(null);
   const [personalPic, setPersonalPic] = useState(null);
@@ -197,6 +200,9 @@ const BecomeAlawyer = () => {
       formDataToSend.append("barNumber", formData.barNumber);
       formDataToSend.append("yearsOfExperience", formData.yearsOfExperience);
       formDataToSend.append("specialization", formData.specialization);
+      formDataToSend.append("about", formData.about);
+      formDataToSend.append("hourlyRate", formData.hourlyRate);
+      formDataToSend.append("halfHourlyRate", formData.halfHourlyRate);
       
       if (certificationPic) {
         formDataToSend.append("certificationPic", certificationPic);
@@ -329,6 +335,73 @@ const BecomeAlawyer = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                {/* About Section */}
+                <div>
+                  <label htmlFor="about" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                    About Yourself
+                  </label>
+                  <textarea
+                    id="about"
+                    name="about"
+                    value={formData.about}
+                    onChange={handleChange}
+                    required
+                    minLength={150}
+                    maxLength={2000}
+                    rows="6"
+                    className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300"
+                    placeholder="Tell us about yourself, your experience, and your approach to legal practice (minimum 150 characters)..."
+                  />
+                  <div className="flex justify-between mt-1">
+                    <p className="text-sm text-[#DECEB0]/70">
+                      Characters: {formData.about.length}/2000
+                    </p>
+                    {formData.about.length > 0 && formData.about.length < 150 && (
+                      <p className="text-sm text-red-400">
+                        Minimum 150 characters required (currently {formData.about.length})
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Hourly Rates */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="hourlyRate" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                      Hourly Rate (USD)
+                    </label>
+                    <input
+                      type="number"
+                      id="hourlyRate"
+                      name="hourlyRate"
+                      value={formData.hourlyRate}
+                      onChange={handleChange}
+                      required
+                      min="0"
+                      step="0.01"
+                      className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300"
+                      placeholder="Enter your hourly rate"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="halfHourlyRate" className="block text-sm font-medium text-[#DECEB0] mb-2">
+                      Half-Hour Rate (USD)
+                    </label>
+                    <input
+                      type="number"
+                      id="halfHourlyRate"
+                      name="halfHourlyRate"
+                      value={formData.halfHourlyRate}
+                      onChange={handleChange}
+                      required
+                      min="0"
+                      step="0.01"
+                      className="w-full px-4 py-3 rounded-lg bg-white/10 border border-[#DECEB0]/30 text-[#DECEB0] placeholder-[#DECEB0]/50 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent transition-all duration-300"
+                      placeholder="Enter your half-hour rate"
+                    />
+                  </div>
                 </div>
 
                 {/* Certification Picture */}

@@ -29,6 +29,20 @@ const lawyerApplicationSchema = new mongoose.Schema({
       "Employment Law"
     ]
   },
+  about: {
+    type: String,
+    required: true,
+    minlength: [150, 'About section must be at least 150 characters long'],
+    maxlength: [2000, 'About section cannot exceed 2000 characters']
+  },
+  hourlyRate: {
+    type: Number,
+    required: true
+  },
+  halfHourlyRate: {
+    type: Number,
+    required: true
+  },
   certificationPic: {
     type: String, // URL to the stored image
     required: true

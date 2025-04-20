@@ -17,18 +17,18 @@ const Signup = () => {
       Swal.fire({
         icon: "success",
         title: "Registration Successful",
-        text: "You can now log in!",
-        confirmButtonText: "Go to Login",
+        text: "You are now logged in!",
+        confirmButtonText: "Go to Home",
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate("/Login");
+          navigate("/");
         }
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Registration Failed",
-        text: "Please try again.",
+        text: error.response?.data?.message || "Please try again.",
         confirmButtonText: "Try Again",
       });
     }
@@ -72,7 +72,7 @@ const Signup = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#2B3B3A] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
+                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#DECEB0] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -90,7 +90,7 @@ const Signup = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#2B3B3A] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
+                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#DECEB0] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
                   placeholder="Choose a username"
                 />
               </div>
@@ -108,7 +108,7 @@ const Signup = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#2B3B3A] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
+                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#DECEB0] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
                   placeholder="Create a password"
                 />
               </div>

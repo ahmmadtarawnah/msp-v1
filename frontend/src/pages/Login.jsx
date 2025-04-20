@@ -88,7 +88,7 @@ const Login = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#2B3B3A] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
+                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#DECEB0] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
                   placeholder="Enter your username"
                 />
               </div>
@@ -106,7 +106,7 @@ const Login = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#2B3B3A] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
+                  className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-[#DECEB0]/30 placeholder-[#DECEB0]/50 text-[#DECEB0] bg-white/10 focus:outline-none focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent"
                   placeholder="Enter your password"
                 />
               </div>

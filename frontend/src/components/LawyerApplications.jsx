@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import { useAuth } from '../context/AuthContext';
 
 const LawyerApplications = () => {
@@ -35,12 +34,6 @@ const LawyerApplications = () => {
       console.error("Error fetching applications:", error);
       setApplications([]);
       setLoading(false);
-      Swal.fire({
-        title: "Error!",
-        text: "Failed to fetch applications. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#2B3B3A"
-      });
     }
   };
 
@@ -72,24 +65,11 @@ const LawyerApplications = () => {
         }
       }
 
-      Swal.fire({
-        title: "Success!",
-        text: `Application has been ${status} successfully.`,
-        icon: "success",
-        confirmButtonColor: "#2B3B3A"
-      });
-
       // Refresh applications list
       fetchApplications();
       setSelectedApplication(null);
     } catch (error) {
       console.error("Error updating application status:", error);
-      Swal.fire({
-        title: "Error!",
-        text: "Failed to update application status. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#2B3B3A"
-      });
     }
   };
 
@@ -164,111 +144,138 @@ const LawyerApplications = () => {
 
       {/* Application Details Modal */}
       {selectedApplication && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="px-4 py-5 sm:p-6">
-              <div className="flex justify-between items-start sticky top-0 bg-white z-10">
-                <h3 className="text-lg font-medium text-[#2B3B3A]">
-                  Application Details
-                </h3>
-                <button
-                  onClick={() => setSelectedApplication(null)}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  <span className="sr-only">Close</span>
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              {/* Header with Close Button */}
+              <div className="sticky top-0 bg-white z-10 rounded-t-2xl border-b border-gray-200">
+                <div className="flex items-center justify-between px-6 py-4">
+                  <h3 className="text-xl font-semibold text-[#2B3B3A]">
+                    Application Details
+                  </h3>
+                  <button
+                    onClick={() => setSelectedApplication(null)}
+                    className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
+                  >
+                    <span className="sr-only">Close</span>
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
-              <div className="mt-4 space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Applicant</h4>
-                  <p className="mt-1 text-sm text-[#2B3B3A]">
-                    {selectedApplication.userId?.name || 'Unknown User'}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Bar Number</h4>
-                  <p className="mt-1 text-sm text-[#2B3B3A]">
-                    {selectedApplication.barNumber || 'Not provided'}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Years of Experience</h4>
-                  <p className="mt-1 text-sm text-[#2B3B3A]">
-                    {selectedApplication.yearsOfExperience || 'Not provided'}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Specialization</h4>
-                  <p className="mt-1 text-sm text-[#2B3B3A]">
-                    {selectedApplication.specialization || 'Not provided'}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Certification</h4>
-                  {selectedApplication.certificationPic ? (
-                    <div className="mt-2">
-                      <img
-                        src={`http://localhost:5000/uploads/${selectedApplication.certificationPic}`}
-                        alt="Certification"
-                        className="max-w-xs rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setEnlargedImage(`http://localhost:5000/uploads/${selectedApplication.certificationPic}`)}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/300x200?text=No+Image+Available';
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <p className="mt-1 text-sm text-gray-500">No certification image provided</p>
-                  )}
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Personal Picture</h4>
-                  {selectedApplication.personalPic ? (
-                    <div className="mt-2">
+              <div className="p-6 space-y-6">
+                {/* Applicant Info Section */}
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center space-x-4">
+                    {selectedApplication.personalPic ? (
                       <img
                         src={`http://localhost:5000/uploads/${selectedApplication.personalPic}`}
-                        alt="Personal"
-                        className="max-w-xs rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity"
+                        alt="Applicant"
+                        className="h-16 w-16 rounded-full object-cover border-2 border-[#DECEB0] cursor-pointer hover:opacity-90 transition-opacity"
                         onClick={() => setEnlargedImage(`http://localhost:5000/uploads/${selectedApplication.personalPic}`)}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/300x200?text=No+Image+Available';
+                          e.target.src = 'https://via.placeholder.com/64?text=No+Image';
                         }}
                       />
+                    ) : (
+                      <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
+                        <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="text-lg font-medium text-[#2B3B3A]">
+                        {selectedApplication.userId?.name || 'Unknown User'}
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        Bar Number: {selectedApplication.barNumber || 'Not provided'}
+                      </p>
                     </div>
-                  ) : (
-                    <p className="mt-1 text-sm text-gray-500">No personal picture provided</p>
-                  )}
+                  </div>
                 </div>
 
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">Submitted On</h4>
-                  <p className="mt-1 text-sm text-[#2B3B3A]">
-                    {selectedApplication.createdAt ? formatDate(selectedApplication.createdAt) : 'Unknown date'}
-                  </p>
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">Experience & Specialization</h4>
+                      <div className="space-y-2">
+                        <p className="text-sm text-[#2B3B3A]">
+                          <span className="font-medium">Years of Experience:</span> {selectedApplication.yearsOfExperience || 'Not provided'}
+                        </p>
+                        <p className="text-sm text-[#2B3B3A]">
+                          <span className="font-medium">Specialization:</span> {selectedApplication.specialization || 'Not provided'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">Rates</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <p className="text-xs text-gray-500">Hourly Rate</p>
+                          <p className="text-lg font-semibold text-[#2B3B3A]">
+                            ${selectedApplication.hourlyRate?.toFixed(2) || '0.00'}
+                          </p>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <p className="text-xs text-gray-500">Half-Hour Rate</p>
+                          <p className="text-lg font-semibold text-[#2B3B3A]">
+                            ${selectedApplication.halfHourlyRate?.toFixed(2) || '0.00'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">About</h4>
+                      <p className="text-sm text-[#2B3B3A] whitespace-pre-wrap">
+                        {selectedApplication.about || 'Not provided'}
+                      </p>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                      <h4 className="text-sm font-medium text-gray-500 mb-2">Certification</h4>
+                      {selectedApplication.certificationPic ? (
+                        <div className="mt-2">
+                          <img
+                            src={`http://localhost:5000/uploads/${selectedApplication.certificationPic}`}
+                            alt="Certification"
+                            className="w-full rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => setEnlargedImage(`http://localhost:5000/uploads/${selectedApplication.certificationPic}`)}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = 'https://via.placeholder.com/300x200?text=No+Image+Available';
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500">No certification image provided</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
+                {/* Footer with Action Buttons */}
                 {selectedApplication.status === "pending" && (
-                  <div className="flex justify-end space-x-4 mt-6">
+                  <div className="flex justify-end space-x-4 mt-6 pt-4 border-t border-gray-200">
                     <button
                       onClick={() => handleStatusUpdate(selectedApplication._id, "rejected")}
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      className="px-6 py-2 border border-red-600 rounded-lg shadow-sm text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
                     >
                       Reject
                     </button>
                     <button
                       onClick={() => handleStatusUpdate(selectedApplication._id, "approved")}
-                      className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#2B3B3A] hover:bg-[#1a2a29] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#DECEB0]"
+                      className="px-6 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#2B3B3A] hover:bg-[#1a2a29] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#DECEB0] transition-colors duration-200"
                     >
                       Approve
                     </button>

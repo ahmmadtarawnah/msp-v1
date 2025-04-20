@@ -3,12 +3,13 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { authenticate, isAdmin } = require("../controllers/authController");
+const { authenticate, isAdmin, isLawyer } = require("../controllers/authController");
 const {
   submitApplication,
   getAllApplications,
   getApplicationById,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getApplicationByUserId
 } = require("../controllers/lawyerApplicationController");
 
 // Ensure uploads directory exists
@@ -49,6 +50,9 @@ router.post(
   ]),
   submitApplication
 );
+
+// Get application by user ID (for lawyers)
+router.get("/user/:userId", authenticate, isLawyer, getApplicationByUserId);
 
 // Admin routes
 router.use(authenticate);

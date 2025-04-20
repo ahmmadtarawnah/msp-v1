@@ -19,6 +19,8 @@ import Booking from "./pages/Booking";
 import Profile from "./pages/Profile"; // Import Profile page
 import AdminDashboard from "./pages/AdminDashboard";
 import BecomeAlawyer from "./pages/BecomeAlawyer"; // Import Become a Lawyer page
+import LawyerDashboard from "./pages/LawyerDashboard"; // Import Lawyer Dashboard page
+import LawyerAppointments from "./pages/LawyerAppointments";
 
 import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 
@@ -47,6 +49,7 @@ const AppRoutes = ({ loading }) => {
   const isLoginPage = location.pathname === "/Login";
   const isSignupPage = location.pathname === "/Signup";
   const isAdminDashboard = location.pathname.startsWith("/admin-dashboard");
+  const isLawyerDashboard = location.pathname.startsWith("/lawyer-dashboard");
   const isBecomeLawyerPage = location.pathname === "/become-a-lawyer";
 
   if (loading || isLoading) {
@@ -55,8 +58,8 @@ const AppRoutes = ({ loading }) => {
 
   return (
     <>
-      {/* Navbar is hidden on Login, Signup, and Admin Dashboard pages */}
-      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isBecomeLawyerPage && <Navbar />}
+      {/* Navbar is hidden on Login, Signup, and Dashboard pages */}
+      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -67,10 +70,12 @@ const AppRoutes = ({ loading }) => {
         <Route path="/Profile" element={<Profile />} />
         <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
         <Route path="/become-a-lawyer" element={<BecomeAlawyer />} />
+        <Route path="/lawyer-dashboard" element={<LawyerDashboard />} />
+        <Route path="/lawyer-dashboard/appointments" element={<LawyerAppointments />} />
       </Routes>
 
-      {/* Footer is hidden on Login, Signup, and Admin Dashboard pages */}
-      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isBecomeLawyerPage && <Footer />}
+      {/* Footer is hidden on Login, Signup, and Dashboard pages */}
+      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage && <Footer />}
     </>
   );
 };

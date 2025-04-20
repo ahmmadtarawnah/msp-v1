@@ -194,15 +194,18 @@ const AdminDashboard = () => {
                                 {user.username}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <select
-                                  value={user.role}
-                                  onChange={(e) => handleUpdateRole(user._id, e.target.value)}
-                                  className="bg-gray-50 text-gray-900 rounded-md px-2 py-1 border border-gray-300"
-                                >
-                                  <option value="user">User</option>
-                                  <option value="lawyer">Lawyer</option>
-                                  <option value="admin">Admin</option>
-                                </select>
+                                {user.role === "lawyer" ? (
+                                  <span className="text-[#2B3B3A] font-medium">Lawyer</span>
+                                ) : (
+                                  <select
+                                    value={user.role}
+                                    onChange={(e) => handleUpdateRole(user._id, e.target.value)}
+                                    className="bg-gray-50 text-gray-900 rounded-md px-2 py-1 border border-gray-300"
+                                  >
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                  </select>
+                                )}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button
