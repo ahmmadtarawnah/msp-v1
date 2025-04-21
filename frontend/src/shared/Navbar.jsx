@@ -158,11 +158,6 @@ const Navbar = () => {
     };
   }, [scrolled]);
 
-  useEffect(() => {
-    const navbarHeight = scrolled ? 64 : 80; // 64px for scrolled, 80px for normal
-    document.body.style.paddingTop = `${navbarHeight}px`;
-  }, [scrolled]);
-
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -229,13 +224,13 @@ const Navbar = () => {
                   Book Session
                 </Link>
                 <Link
-                  to="#blogs"
+                  to="/Blogs"
                   className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
                 >
                   Blogs
                 </Link>
                 <Link
-                  to="#about"
+                  to="/about"
                   className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
                 >
                   About
@@ -347,7 +342,7 @@ const Navbar = () => {
                 Blogs
               </Link>
               <Link
-                to="#about"
+                to="/about"
                 className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
               >
                 About

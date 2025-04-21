@@ -8,8 +8,9 @@ import {
 import "./App.css";
 import Navbar from "./shared/Navbar";
 import Footer from "./shared/Footer";
-import Loader from "./shared/loader"; // Import the Loader component
+import Loader from "./shared/Loader"; // Changed from loader to Loader
 import { useAuth } from "./context/AuthContext";
+import ScrollToTop from "./components/ScrollToTop";
 
 import Home from "./pages/Home";
 import ContactUs from "./pages/Contactus";
@@ -21,6 +22,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BecomeAlawyer from "./pages/BecomeAlawyer"; // Import Become a Lawyer page
 import LawyerDashboard from "./pages/LawyerDashboard"; // Import Lawyer Dashboard page
 import LawyerAppointments from "./pages/LawyerAppointments";
+import LawyerDetails from "./pages/LawyerDetails";
+import About from "./pages/About";
+import LegalServices from "./pages/LegalServices";
 
 import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 
@@ -36,6 +40,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <AppRoutes loading={loading} />
       </Router>
     </AuthProvider>
@@ -57,26 +62,31 @@ const AppRoutes = ({ loading }) => {
   }
 
   return (
-    <>
+    <div className="min-h-screen">
       {/* Navbar is hidden on Login, Signup, and Dashboard pages */}
       {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage && <Navbar />}
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Contact" element={<ContactUs />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Signup" element={<Signup />} />
-        <Route path="/Booking" element={<Booking />} />
-        <Route path="/Profile" element={<Profile />} />
-        <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
-        <Route path="/become-a-lawyer" element={<BecomeAlawyer />} />
-        <Route path="/lawyer-dashboard" element={<LawyerDashboard />} />
-        <Route path="/lawyer-dashboard/appointments" element={<LawyerAppointments />} />
-      </Routes>
+      <main className={`${!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage ? 'pt-20' : ''}`}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/Contact" element={<ContactUs />} />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/Signup" element={<Signup />} />
+          <Route path="/Booking" element={<Booking />} />
+          <Route path="/Profile" element={<Profile />} />
+          <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
+          <Route path="/become-a-lawyer" element={<BecomeAlawyer />} />
+          <Route path="/lawyer-dashboard" element={<LawyerDashboard />} />
+          <Route path="/lawyer-dashboard/appointments" element={<LawyerAppointments />} />
+          <Route path="/lawyer-details" element={<LawyerDetails />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/legal-services" element={<LegalServices />} />
+        </Routes>
+      </main>
 
       {/* Footer is hidden on Login, Signup, and Dashboard pages */}
       {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage && <Footer />}
-    </>
+    </div>
   );
 };
 

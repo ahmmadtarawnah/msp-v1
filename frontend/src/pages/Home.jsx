@@ -162,6 +162,7 @@ const LegalAidLogo = ({
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
     const video = document.getElementById("hero-video");
@@ -172,10 +173,57 @@ const Home = () => {
     video.play().catch((error) => {
       console.log("Autoplay prevented:", error);
     });
+
+    // Add scroll event listener
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <div className="bg-gray-900">
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-[#2B3B3A] to-[#2B3B3A]/80 p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 animate-fade-in"
+          style={{
+            animation: "fadeIn 0.3s ease-in-out",
+          }}
+        >
+          <div className="w-12 h-12 flex items-center justify-center">
+            <LegalAidLogo size="small" />
+          </div>
+        </button>
+      )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+
       {/* Hero Section */}
       <div className="relative h-screen w-full overflow-hidden">
         {/* Video Background with opacity applied */}
@@ -503,12 +551,12 @@ const Home = () => {
           </div>
 
           <div className="text-center mt-12">
-            <a
-              href="#all-services"
+            <Link
+              to="/legal-services"
               className="inline-block bg-[#2B3B3A] text-[#DECEB0] px-8 py-3 rounded-full font-medium hover:bg-[#1a2a29] transition-colors duration-300"
             >
               View All Services
-            </a>
+            </Link>
           </div>
         </div>
       </section>

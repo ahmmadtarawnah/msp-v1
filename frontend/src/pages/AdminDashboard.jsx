@@ -5,6 +5,8 @@ import { useNavigate, Routes, Route, Outlet } from "react-router-dom";
 import Swal from "sweetalert2";
 import AdminSidebar from "../components/AdminSidebar";
 import LawyerApplications from "../components/LawyerApplications";
+import AddBlog from '../components/AddBlog';
+import UserManagement from '../components/UserManagement';
 
 const AdminDashboard = () => {
   const { authData, logout } = useAuth();
@@ -225,6 +227,8 @@ const AdminDashboard = () => {
               }
             />
             <Route path="/applications" element={<LawyerApplications />} />
+            <Route path="/users" element={<UserManagement />} />
+            <Route path="/add-blog" element={<AddBlog />} />
           </Routes>
         </div>
       </div>

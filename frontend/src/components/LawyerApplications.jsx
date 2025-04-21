@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import Swal from 'sweetalert2';
 
 const LawyerApplications = () => {
   const { authData } = useAuth();
@@ -39,7 +40,7 @@ const LawyerApplications = () => {
 
   const handleStatusUpdate = async (applicationId, status) => {
     try {
-      await axios.put(
+      const response = await axios.put(
         `http://localhost:5000/api/lawyer-applications/${applicationId}/status`,
         { status },
         {
@@ -49,32 +50,110 @@ const LawyerApplications = () => {
         }
       );
 
-      // If the application is approved, update the user's role to lawyer
-      if (status === "approved") {
-        const application = applications.find(app => app._id === applicationId);
-        if (application) {
-          await axios.put(
-            `http://localhost:5000/api/admin/users/${application.userId._id}/role`,
-            { role: "lawyer" },
-            {
-              headers: {
-                Authorization: `Bearer ${authData.token}`
-              }
-            }
-          );
-        }
-      }
-
       // Refresh applications list
       fetchApplications();
       setSelectedApplication(null);
+
+      // Show success message
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: `Application ${status} successfully!`,
+      });
     } catch (error) {
       console.error("Error updating application status:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Failed to update application status. Please try again.",
+      });
+    }
+  };
+
+  const handleDeleteApplication = async (applicationId) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "This will permanently delete the application and, if approved, will revoke the lawyer role from the user.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      });
+
+      if (result.isConfirmed) {
+        await axios.delete(
+          `http://localhost:5000/api/lawyer-applications/${applicationId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authData.token}`
+            }
+          }
+        );
+
+        // Refresh applications list
+        fetchApplications();
+        setSelectedApplication(null);
+
+        Swal.fire(
+          'Deleted!',
+          'The application has been deleted successfully.',
+          'success'
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      Swal.fire(
+        'Error!',
+        'Failed to delete the application. Please try again.',
+        'error'
+      );
     }
   };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("personalPic", file);
+
+      try {
+        const response = await axios.put(
+          `http://localhost:5000/api/lawyer-applications/${selectedApplication._id}/personal-pic`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${authData.token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // Update the application in the state
+        setApplications(applications.map(app => 
+          app._id === selectedApplication._id ? response.data : app
+        ));
+        setSelectedApplication(response.data);
+
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Profile picture updated successfully!",
+        });
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.response?.data?.message || "Failed to upload image. Please try again later.",
+        });
+      }
+    }
   };
 
   if (loading) {
@@ -121,12 +200,18 @@ const LawyerApplications = () => {
                       {application.status?.charAt(0).toUpperCase() + application.status?.slice(1) || 'Unknown'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                     <button
                       onClick={() => setSelectedApplication(application)}
                       className="text-[#2B3B3A] hover:text-[#1a2a29]"
                     >
                       View Details
+                    </button>
+                    <button
+                      onClick={() => handleDeleteApplication(application._id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>

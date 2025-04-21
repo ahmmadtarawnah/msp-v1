@@ -76,10 +76,23 @@ export const AuthProvider = ({ children }) => {
       );
       const { token, name: userName, username: userUsername, role: userRole, _id: userId } = response.data;
       const newAuthData = { token, userId, name: userName, username: userUsername, role: userRole };
+      
+      // Set token in cookies
       Cookies.set("token", token, { expires: 1 });
+      
+      // Store auth data in localStorage
       localStorage.setItem("authData", JSON.stringify(newAuthData));
+      
+      // Update auth state
       setAuthData(newAuthData);
+      
+      // Set default authorization header for all axios requests
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      
+      // Fetch fresh profile data to ensure everything is up to date
+      await fetchUserProfile(token);
+      
+      return newAuthData;
     } catch (error) {
       console.error("Signup failed:", error);
       throw error;

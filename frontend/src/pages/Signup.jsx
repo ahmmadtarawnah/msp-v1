@@ -16,20 +16,18 @@ const Signup = () => {
       await register(name, username, password);
       Swal.fire({
         icon: "success",
-        title: "Registration Successful",
-        text: "You are now logged in!",
-        confirmButtonText: "Go to Home",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/");
-        }
+        title: "Registration Successful!",
+        text: "You have been registered and logged in successfully.",
+        showConfirmButton: false,
+        timer: 1500,
+      }).then(() => {
+        navigate("/");
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Registration Failed",
-        text: error.response?.data?.message || "Please try again.",
-        confirmButtonText: "Try Again",
+        text: error.response?.data?.message || "An error occurred during registration",
       });
     }
   };
@@ -41,7 +39,7 @@ const Signup = () => {
         <div className="w-full max-w-md space-y-8">
           <div>
             <h2 className="text-center text-4xl font-extrabold text-[#DECEB0]">
-              Sign Up
+              Create Account
             </h2>
             <p className="mt-2 text-center text-sm text-[#DECEB0]/80">
               Already have an account?{" "}
@@ -49,9 +47,31 @@ const Signup = () => {
                 to="/Login"
                 className="font-medium text-[#DECEB0] hover:text-white transition-colors"
               >
-                Log in here
+                Sign in here
               </Link>
             </p>
+            <div className="mt-4 text-center">
+              <Link
+                to="/"
+                className="text-[#DECEB0] hover:text-white transition-colors flex items-center justify-center"
+              >
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                Back to Home
+              </Link>
+            </div>
           </div>
           <form
             onSubmit={handleSubmit}

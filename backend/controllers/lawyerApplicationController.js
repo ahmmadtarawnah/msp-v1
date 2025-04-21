@@ -122,6 +122,12 @@ const updateApplicationStatus = async (req, res) => {
 const getApplicationByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    // Check if the user is trying to access their own application or is an admin
+    if (req.userId !== userId && req.userRole !== "admin") {
+      return res.status(403).json({ message: "You can only access your own application" });
+    }
+
     const application = await LawyerApplication.findOne({ userId })
       .populate("userId", "name username");
 
@@ -136,10 +142,87 @@ const getApplicationByUserId = async (req, res) => {
   }
 };
 
+// Get approved lawyers for public access
+const getApprovedLawyers = async (req, res) => {
+  try {
+    console.log("Fetching approved lawyers..."); // Debug log
+    const lawyers = await LawyerApplication.find({ status: "approved" })
+      .populate("userId", "name username")
+      .select("-certificationPic -createdAt -__v")
+      .sort({ yearsOfExperience: -1 });
+    
+    console.log("Found lawyers:", lawyers); // Debug log
+    res.status(200).json(lawyers);
+  } catch (error) {
+    console.error("Error fetching approved lawyers:", error);
+    res.status(500).json({ message: "Server error while fetching approved lawyers" });
+  }
+};
+
+// Delete lawyer application
+const deleteApplication = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const application = await LawyerApplication.findById(id);
+    
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    // If the application was approved, update the user's role back to user
+    if (application.status === "approved") {
+      await User.findByIdAndUpdate(application.userId, { role: "user" });
+    }
+
+    // Delete the application
+    await LawyerApplication.findByIdAndDelete(id);
+    
+    res.status(200).json({ message: "Application deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting application:", error);
+    res.status(500).json({ message: "Server error while deleting application" });
+  }
+};
+
+// Update personal picture
+const updatePersonalPic = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Check if the user is trying to update their own picture or is an admin
+    if (req.userId !== userId && req.userRole !== "admin") {
+      return res.status(403).json({ message: "You can only update your own profile picture" });
+    }
+
+    // Find the application by userId
+    const application = await LawyerApplication.findOne({ userId });
+    
+    if (!application) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    // Update the personal picture
+    application.personalPic = req.file.filename;
+    await application.save();
+
+    res.status(200).json(application);
+  } catch (error) {
+    console.error("Error updating personal picture:", error);
+    res.status(500).json({ message: "Server error while updating personal picture" });
+  }
+};
+
 module.exports = {
   submitApplication,
   getAllApplications,
   getApplicationById,
   updateApplicationStatus,
-  getApplicationByUserId
+  getApplicationByUserId,
+  getApprovedLawyers,
+  deleteApplication,
+  updatePersonalPic
 }; 

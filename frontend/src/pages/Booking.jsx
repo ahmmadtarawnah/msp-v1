@@ -1,274 +1,285 @@
-import React, { useState } from "react";
-import MP4 from "../assets/law2.mp4";
-const Booking = () => {
-  // State for the selected consultation type
-  const [selectedConsultation, setSelectedConsultation] = useState(null);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-  // Updated consultation types
-  const consultationTypes = [
-    {
-      id: "corporate",
-      title: "Corporate Law",
-      description:
-        "Expert advice on business formation, mergers, acquisitions, corporate governance, and regulatory compliance.",
-    },
-    {
-      id: "criminal",
-      title: "Criminal Law",
-      description:
-        "Guidance on criminal charges, defense strategies, plea bargains, and representation in criminal proceedings.",
-    },
-    {
-      id: "family",
-      title: "Family Law",
-      description:
-        "Assistance with divorce, child custody, adoption, spousal support, and other domestic legal matters.",
-    },
-    {
-      id: "intellectual-property",
-      title: "Intellectual Property",
-      description:
-        "Protection for your inventions, creative works, trademarks, and trade secrets through patents, copyrights, and more.",
-    },
-    {
-      id: "real-estate",
-      title: "Real Estate",
-      description:
-        "Legal advice on property transactions, leasing, zoning issues, landlord-tenant disputes, and property rights.",
-    },
-    {
-      id: "tax",
-      title: "Tax Law",
-      description:
-        "Guidance on tax planning, compliance, audits, disputes with tax authorities, and minimizing tax liability.",
-    },
-    {
-      id: "immigration",
-      title: "Immigration Law",
-      description:
-        "Assistance with visas, green cards, citizenship applications, deportation defense, and immigration compliance.",
-    },
-    {
-      id: "personal-injury",
-      title: "Personal Injury",
-      description:
-        "Representation for accidents, medical malpractice, product liability, and seeking fair compensation for injuries.",
-    },
-    {
-      id: "employment",
-      title: "Employment Law",
-      description:
-        "Guidance on workplace issues including discrimination, harassment, wrongful termination, and employment contracts.",
-    },
-  ];
+const LegalAidLogo = ({
+  size = "normal",
+  color = "#DECEB0",
+  hoverColor = "#ffffff",
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleConsultationSelect = (id) => {
-    setSelectedConsultation(id);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you would typically handle form submission logic
-    setFormSubmitted(true);
+  // Size variations
+  const sizeClasses = {
+    small: "h-6 w-6",
+    normal: "h-10 w-10",
+    large: "h-12 w-12",
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      {/* Updated Hero Section with Video Background */}
-      <div className="relative h-96 md:h-[500px] overflow-hidden">
-        {/* Video background */}
-        <video
-          className="absolute w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-        >
-          <source src={MP4} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-
-        {/* Dark overlay for opacity */}
-        <div className="absolute inset-0 bg-[#2B3B3A] opacity-65"></div>
-
-        {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-center text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Expert Legal <span className="text-[#DECEB0]">Consultation</span>
-          </h1>
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-8">
-            Connect with experienced attorneys who can provide personalized
-            guidance for your specific legal concerns.
-          </p>
-          <div className="flex justify-center space-x-4 mt-2">
-            <div className="flex items-center text-sm md:text-base text-white">
-              <svg
+    <div
+      className={`${
+        sizeClasses[size]
+      } relative cursor-pointer transition-all duration-300 transform ${
+        isHovered ? "scale-110" : ""
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Custom Scales of Justice Logo with Animation */}
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-[#DECEB0]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+        className="w-full h-full transition-all duration-300"
+      >
+        {/* Top Balance Point */}
+        <circle
+          cx="12"
+          cy="4"
+          r="1.5"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${
+            isHovered ? "animate-pulse" : ""
+          }`}
+        />
+
+        {/* Center Bar */}
+        <rect
+          x="11.5"
+          y="4"
+          width="1"
+          height="10"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${
+            isHovered ? "animate-pulse" : ""
+          }`}
+        />
+
+        {/* Base */}
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          d="M8 20h8l-1-2H9l-1 2z"
+          fill={isHovered ? hoverColor : color}
+          className="transition-all duration-300"
+        />
+
+        {/* Base Stem */}
+        <rect
+          x="11.5"
+          y="14"
+          width="1"
+          height="4"
+          fill={isHovered ? hoverColor : color}
+          className="transition-all duration-300"
+        />
+
+        {/* Left Scale Dish */}
+        <circle
+          cx="7"
+          cy="10"
+          r="2.5"
+          fill="transparent"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-500 ${
+            isHovered ? "transform translate-y-1" : ""
+          }`}
+        />
+
+        {/* Right Scale Dish */}
+        <circle
+          cx="17"
+          cy="10"
+          r="2.5"
+          fill="transparent"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-500 ${
+            isHovered ? "transform -translate-y-1" : ""
+          }`}
+        />
+
+        {/* Left Arm */}
+        <line
+          x1="12"
+          y1="4"
+          x2="7"
+          y2="10"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-300 ${
+            isHovered ? "transform rotate-3" : ""
+          }`}
+        />
+
+        {/* Right Arm */}
+        <line
+          x1="12"
+          y1="4"
+          x2="17"
+          y2="10"
+          stroke={isHovered ? hoverColor : color}
+          strokeWidth="1"
+          className={`transition-all duration-300 ${
+            isHovered ? "transform -rotate-3" : ""
+          }`}
+        />
+
+        {/* Small decorative elements */}
+        <circle
+          cx="7"
+          cy="10"
+          r="0.5"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${
+            isHovered ? "opacity-100" : "opacity-70"
+          }`}
+        />
+        <circle
+          cx="17"
+          cy="10"
+          r="0.5"
+          fill={isHovered ? hoverColor : color}
+          className={`transition-all duration-300 ${
+            isHovered ? "opacity-100" : "opacity-70"
+          }`}
                 />
               </svg>
-              <span>Confidential Consultations</span>
-            </div>
-            <div className="flex items-center text-sm md:text-base text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-[#DECEB0]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>Flexible Scheduling</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {formSubmitted ? (
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="w-16 h-16 bg-[#DECEB0] rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-[#2B3B3A]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+      {/* Glow effect on hover */}
+      {isHovered && (
+        <div className="absolute inset-0 rounded-full bg-[#DECEB0] opacity-20 blur-md -z-10"></div>
+      )}
+    </div>
+  );
+};
+
+const Booking = () => {
+  const { authData } = useAuth();
+  const navigate = useNavigate();
+  const [lawyers, setLawyers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSpecialization, setSelectedSpecialization] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("experience_high_to_low");
+
+  useEffect(() => {
+    fetchLawyers();
+  }, []);
+
+  const fetchLawyers = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/lawyer-applications/approved"
+      );
+      console.log("API Response:", response.data); // Debug log
+      if (response.data && Array.isArray(response.data)) {
+        setLawyers(response.data);
+        console.log("First lawyer data:", response.data[0]); // Debug log
+      } else {
+        setLawyers([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching lawyers:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to fetch lawyers. Please try again later.",
+      });
+      setLoading(false);
+    }
+  };
+
+  const specializations = [
+    "all",
+    "Corporate Law",
+    "Criminal Law",
+    "Family Law",
+    "Intellectual Property",
+    "Real Estate",
+    "Tax Law",
+    "Immigration Law",
+    "Personal Injury",
+    "Employment Law",
+  ];
+
+  const filteredLawyers = lawyers
+    .filter((lawyer) => {
+      const matchesSpecialization =
+        selectedSpecialization === "all" ||
+        lawyer.specialization === selectedSpecialization;
+      const matchesSearch =
+        lawyer.userId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lawyer.specialization?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesSpecialization && matchesSearch;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "hourly_rate_low_to_high":
+          return a.hourlyRate - b.hourlyRate;
+        case "hourly_rate_high_to_low":
+          return b.hourlyRate - a.hourlyRate;
+        case "half_hourly_rate_low_to_high":
+          return a.halfHourlyRate - b.halfHourlyRate;
+        case "half_hourly_rate_high_to_low":
+          return b.halfHourlyRate - a.halfHourlyRate;
+        case "experience_low_to_high":
+          return a.yearsOfExperience - b.yearsOfExperience;
+        case "experience_high_to_low":
+          return b.yearsOfExperience - a.yearsOfExperience;
+        default:
+          return 0;
+      }
+    });
+
+  const handleLawyerClick = (lawyer) => {
+    console.log("Selected lawyer:", lawyer); // Debug log
+    navigate("/lawyer-details", { state: { lawyer } });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#2B3B3A]"></div>
             </div>
-            <h2 className="text-2xl font-bold text-[#2B3B3A] mb-4">
-              Consultation Request Submitted!
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Thank you for booking a consultation with us. One of our
-              representatives will contact you shortly to confirm your
-              appointment.
-            </p>
-            <button
-              onClick={() => setFormSubmitted(false)}
-              className="bg-[#2B3B3A] text-[#DECEB0] font-bold py-3 px-8 rounded-md transition-all duration-300 hover:bg-[#1a2a29]"
-            >
-              Book Another Consultation
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="text-center mb-12">
-              <h2 className="text-2xl font-bold text-[#2B3B3A] mb-2">
-                Select Your Consultation Type
-              </h2>
-              <p className="text-gray-600">
-                Choose the type of legal consultation that best fits your needs
-              </p>
-            </div>
+    );
+  }
 
-            <form onSubmit={handleSubmit}>
-              {/* Consultation Types Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {consultationTypes.map((type) => (
-                  <div
-                    key={type.id}
-                    className={`bg-white rounded-lg shadow-md overflow-hidden border-2 transition-all duration-300 cursor-pointer ${
-                      selectedConsultation === type.id
-                        ? "border-[#DECEB0] transform scale-105"
-                        : "border-transparent hover:border-gray-200"
-                    }`}
-                    onClick={() => handleConsultationSelect(type.id)}
-                  >
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold text-[#2B3B3A]">
-                          {type.title}
-                        </h3>
-                        <div
-                          className={`w-6 h-6 rounded-full border-2 flex-shrink-0 ${
-                            selectedConsultation === type.id
-                              ? "bg-[#DECEB0] border-[#DECEB0]"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {selectedConsultation === type.id && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-5 w-5 text-[#2B3B3A]"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                      </div>
-                      <p className="text-gray-600 mb-4">{type.description}</p>
-                      <div className="flex justify-between items-center text-sm font-medium"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Action Button */}
-              <div className="text-center">
-                <button
-                  type="submit"
-                  disabled={!selectedConsultation}
-                  className={`py-3 px-10 rounded-md font-bold text-lg transition-all duration-300 ${
-                    selectedConsultation
-                      ? "bg-[#DECEB0] hover:bg-[#c7b897] text-[#2B3B3A] shadow-md"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                >
-                  Continue to Scheduling
-                </button>
-                {!selectedConsultation && (
-                  <p className="text-gray-500 mt-2 text-sm">
-                    Please select a consultation type to continue
-                  </p>
-                )}
-              </div>
-            </form>
-          </>
-        )}
-      </div>
-
-      {/* Additional Information Section */}
-      <div className="bg-white py-12">
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="bg-[#2B3B3A] text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="text-center">
+            <h1 className="text-5xl font-bold mb-6">Find Your Legal Expert</h1>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Connect with experienced lawyers who specialize in your area of need
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
+        <div className="bg-white rounded-lg shadow-xl p-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Search Lawyers
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search by name or specialization..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#2B3B3A] focus:border-[#2B3B3A]"
+                />
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-[#DECEB0]"
+                  className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -277,70 +288,124 @@ const Booking = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-[#2B3B3A] mb-2">
-                What to Expect
-              </h3>
-              <p className="text-gray-600">
-                Your consultation will be conducted with one of our experienced
-                attorneys specialized in your selected area of law.
-              </p>
             </div>
 
-            <div className="text-center">
-              <div className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-[#DECEB0]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold text-[#2B3B3A] mb-2">
-                Preparation
-              </h3>
-              <p className="text-gray-600">
-                Bring any relevant documents to your consultation. The more
-                information you provide, the better advice we can offer.
-              </p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Practice Area
+              </label>
+              <select
+                value={selectedSpecialization}
+                onChange={(e) => setSelectedSpecialization(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#2B3B3A] focus:border-[#2B3B3A]"
+              >
+                {specializations.map((spec) => (
+                  <option key={spec} value={spec}>
+                    {spec === "all" ? "All Practice Areas" : spec}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="text-center">
-              <div className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-[#DECEB0]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold text-[#2B3B3A] mb-2">Payment</h3>
-              <p className="text-gray-600">
-                Payment is collected after your consultation is scheduled. We
-                accept all major credit cards and electronic payments.
-              </p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sort By
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#2B3B3A] focus:border-[#2B3B3A]"
+              >
+                <optgroup label="Experience">
+                  <option value="experience_high_to_low">Experience (High to Low)</option>
+                  <option value="experience_low_to_high">Experience (Low to High)</option>
+                </optgroup>
+                <optgroup label="Hourly Rate">
+                  <option value="hourly_rate_low_to_high">Hourly Rate (Low to High)</option>
+                  <option value="hourly_rate_high_to_low">Hourly Rate (High to Low)</option>
+                </optgroup>
+                <optgroup label="Half-Hour Rate">
+                  <option value="half_hourly_rate_low_to_high">Half-Hour Rate (Low to High)</option>
+                  <option value="half_hourly_rate_high_to_low">Half-Hour Rate (High to Low)</option>
+                </optgroup>
+              </select>
             </div>
           </div>
         </div>
+
+        {/* Lawyer Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredLawyers.map((lawyer) => (
+            <div
+              key={lawyer._id}
+              className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+              onClick={() => handleLawyerClick(lawyer)}
+            >
+              {/* Lawyer Image */}
+              <div className="relative h-64">
+                <img
+                  src={`http://localhost:5000/uploads/${lawyer.personalPic}`}
+                  alt={lawyer.userId?.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://via.placeholder.com/300x200";
+                  }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                  <h3 className="text-2xl font-bold text-white">
+                    {lawyer.userId?.name}
+                  </h3>
+                  <p className="text-[#DECEB0]">{lawyer.specialization}</p>
+                </div>
+              </div>
+
+              {/* Lawyer Info */}
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm text-gray-500">Experience</span>
+                  <span className="text-lg font-semibold text-[#2B3B3A]">
+                    {lawyer.yearsOfExperience} years
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-500">Rate</span>
+                  <span className="text-lg font-semibold text-[#2B3B3A]">
+                    ${lawyer.hourlyRate}/hr
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredLawyers.length === 0 && (
+          <div className="text-center py-12">
+                <svg
+              className="w-16 h-16 text-gray-400 mx-auto mb-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No lawyers found
+            </h3>
+              <p className="text-gray-600">
+              Try adjusting your search criteria or filters
+              </p>
+          </div>
+        )}
       </div>
     </div>
   );

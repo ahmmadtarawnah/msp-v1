@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate, Routes, Route, Outlet } from "react-router-dom";
 import Swal from "sweetalert2";
 import LawyerSidebar from "../components/LawyerSidebar";
+import Loader from "../shared/Loader";
 
 const LawyerDashboard = () => {
   const { authData } = useAuth();
@@ -19,10 +20,16 @@ const LawyerDashboard = () => {
       navigate("/");
       return;
     }
-    fetchLawyerData();
+    if (authData.userId) {
+      fetchLawyerData();
+    }
   }, [authData, navigate]);
 
   const fetchLawyerData = async () => {
+    if (!authData?.userId) {
+      console.error("No user ID available");
+      return;
+    }
     try {
       const response = await axios.get(
         `http://localhost:5000/api/lawyer-applications/user/${authData.userId}`,
@@ -37,11 +44,23 @@ const LawyerDashboard = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching lawyer data:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Failed to fetch lawyer data. Please try again later.",
-      });
+      if (error.response?.status === 403) {
+        Swal.fire({
+          icon: "warning",
+          title: "Access Denied",
+          text: "You don't have permission to access the lawyer dashboard. Please make sure your application has been approved.",
+          confirmButtonColor: "#2B3B3A"
+        }).then(() => {
+          navigate("/");
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.response?.data?.message || "Failed to fetch lawyer data. Please try again later.",
+          confirmButtonColor: "#2B3B3A"
+        });
+      }
       setLoading(false);
     }
   };
@@ -60,7 +79,7 @@ const LawyerDashboard = () => {
 
       try {
         const response = await axios.put(
-          `http://localhost:5000/api/lawyer-applications/${lawyerData._id}/personal-pic`,
+          `http://localhost:5000/api/lawyer-applications/user/${authData.userId}/personal-pic`,
           formData,
           {
             headers: {
@@ -84,7 +103,7 @@ const LawyerDashboard = () => {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Failed to upload image. Please try again later.",
+          text: error.response?.data?.message || "Failed to upload image. Please try again later.",
         });
       }
     }
@@ -100,11 +119,7 @@ const LawyerDashboard = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2B3B3A] to-[#1A2A29]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#DECEB0]"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (!lawyerData) {
@@ -221,8 +236,8 @@ const LawyerDashboard = () => {
 
       {/* Options Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-80">
+        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-80 shadow-xl">
             <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">Profile Picture Options</h3>
             <div className="space-y-3">
               <button
@@ -250,11 +265,11 @@ const LawyerDashboard = () => {
 
       {/* Enlarged Image Modal */}
       {showEnlargedImage && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50">
           <div className="relative">
             <button
               onClick={() => setShowEnlargedImage(false)}
-              className="absolute top-2 right-2 text-white hover:text-gray-300"
+              className="absolute top-2 right-2 text-[#2B3B3A] hover:text-[#1a2a29]"
             >
               <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

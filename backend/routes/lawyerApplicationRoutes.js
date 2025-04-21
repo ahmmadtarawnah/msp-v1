@@ -9,7 +9,10 @@ const {
   getAllApplications,
   getApplicationById,
   updateApplicationStatus,
-  getApplicationByUserId
+  getApplicationByUserId,
+  getApprovedLawyers,
+  deleteApplication,
+  updatePersonalPic
 } = require("../controllers/lawyerApplicationController");
 
 // Ensure uploads directory exists
@@ -51,8 +54,17 @@ router.post(
   submitApplication
 );
 
-// Get application by user ID (for lawyers)
+// Get approved lawyers (public access)
+router.get("/approved", async (req, res, next) => {
+  console.log("Getting approved lawyers..."); // Debug log
+  next();
+}, getApprovedLawyers);
+
+// Get application by user ID (for lawyers and applicants)
 router.get("/user/:userId", authenticate, isLawyer, getApplicationByUserId);
+
+// Update personal picture (for lawyers and admins)
+router.put("/user/:userId/personal-pic", authenticate, upload.single("personalPic"), updatePersonalPic);
 
 // Admin routes
 router.use(authenticate);
@@ -61,5 +73,7 @@ router.use(isAdmin);
 router.get("/", getAllApplications);
 router.get("/:id", getApplicationById);
 router.put("/:id/status", updateApplicationStatus);
+router.put("/:id/personal-pic", upload.single("personalPic"), updatePersonalPic);
+router.delete("/:id", deleteApplication);
 
 module.exports = router; 
