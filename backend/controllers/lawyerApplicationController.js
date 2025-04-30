@@ -1,5 +1,7 @@
 const LawyerApplication = require("../models/lawyerApplicationModel");
 const User = require("../models/userModel");
+const Appointment = require("../models/appointmentModel");
+const Review = require("../models/reviewModel");
 
 // Submit a lawyer application
 const submitApplication = async (req, res) => {
@@ -171,6 +173,13 @@ const deleteApplication = async (req, res) => {
 
     // If the application was approved, update the user's role back to user
     if (application.status === "approved") {
+      // Delete all appointments for this lawyer
+      await Appointment.deleteMany({ lawyerId: application.userId });
+      
+      // Delete all reviews for this lawyer
+      await Review.deleteMany({ lawyerId: application.userId });
+      
+      // Update user role back to user
       await User.findByIdAndUpdate(application.userId, { role: "user" });
     }
 

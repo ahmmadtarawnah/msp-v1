@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Swal from 'sweetalert2';
+import Cookies from 'js-cookie';
 
 const UserManagement = () => {
-  const { authData } = useAuth();
+  const { authData, refreshAuthData } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +35,7 @@ const UserManagement = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      await axios.put(
+      const response = await axios.put(
         `http://localhost:5000/api/admin/users/${userId}/role`,
         { role: newRole },
         {
@@ -47,6 +48,18 @@ const UserManagement = () => {
       setUsers(users.map(user => 
         user._id === userId ? { ...user, role: newRole } : user
       ));
+      
+      if (userId === authData.userId) {
+        Cookies.set("token", response.data.token, { expires: 1 });
+        const newAuthData = {
+          ...authData,
+          role: newRole,
+          token: response.data.token
+        };
+        localStorage.setItem("authData", JSON.stringify(newAuthData));
+        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+        await refreshAuthData(response.data.token);
+      }
       
       Swal.fire({
         icon: 'success',

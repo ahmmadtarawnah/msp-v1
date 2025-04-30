@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import StyledCheckbox from "../components/StyledCheckbox";
 import StyledButton from "../components/StyledButton";
+import ReviewComponent from "../components/ReviewComponent";
 
 // Import the LegalAidLogo component from wherever you've defined it
 // Alternatively, I'll include a simplified version here:
@@ -163,6 +164,7 @@ const LawyerDetails = () => {
   const navigate = useNavigate();
   const { lawyer } = location.state || {};
   const [selectedRate, setSelectedRate] = useState("hourly");
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
 
   if (!lawyer) {
     navigate("/booking");
@@ -605,12 +607,10 @@ const LawyerDetails = () => {
             </div>
 
             {/* Testimonials Section */}
-            
+            <ReviewComponent lawyerId={lawyer.userId._id} userId={user?._id} />
           </div>
         </div>
       </div>
-
-   
     </div>
   );
 };

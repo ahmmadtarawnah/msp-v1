@@ -10,6 +10,7 @@ const contactRoutes = require("./routes/contactRoutes"); // Add this import for 
 const profileRoutes = require("./routes/profileRoutes"); // Add this import for profile routes
 const adminRoutes = require("./routes/adminRoutes");
 const lawyerApplicationRoutes = require("./routes/lawyerApplicationRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 app.use(express.json());
@@ -34,6 +35,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/lawyer-applications", lawyerApplicationRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

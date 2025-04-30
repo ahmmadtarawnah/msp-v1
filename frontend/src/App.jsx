@@ -76,7 +76,7 @@ const AppRoutes = ({ loading }) => {
           <Route path="/Profile" element={<Profile />} />
           <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
           <Route path="/become-a-lawyer" element={<BecomeAlawyer />} />
-          <Route path="/lawyer-dashboard" element={<LawyerDashboard />} />
+          <Route path="/lawyer-dashboard/*" element={<LawyerDashboard />} />
           <Route path="/lawyer-dashboard/appointments" element={<LawyerAppointments />} />
           <Route path="/lawyer-details" element={<LawyerDetails />} />
           <Route path="/about" element={<About />} />

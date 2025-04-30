@@ -5,6 +5,7 @@ import { useNavigate, Routes, Route, Outlet } from "react-router-dom";
 import Swal from "sweetalert2";
 import LawyerSidebar from "../components/LawyerSidebar";
 import Loader from "../shared/Loader";
+import LawyerReviews from "../components/LawyerReviews";
 
 const LawyerDashboard = () => {
   const { authData } = useAuth();
@@ -14,6 +15,7 @@ const LawyerDashboard = () => {
   const [previewUrl, setPreviewUrl] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showEnlargedImage, setShowEnlargedImage] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     if (!authData || authData.role !== "lawyer") {
@@ -124,12 +126,12 @@ const LawyerDashboard = () => {
 
   if (!lawyerData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#2B3B3A] to-[#1A2A29]">
+      <div className="min-h-screen bg-[#F5F0E6]">
         <div className="flex">
           <LawyerSidebar />
           <div className="ml-64 flex-1 p-6">
             <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-              <h2 className="text-2xl font-bold text-[#2B3B3A] mb-4">No Lawyer Data Found</h2>
+              <h2 className="text-2xl font-bold text-[#3A4B4A] mb-4">No Lawyer Data Found</h2>
               <p className="text-gray-600">Please submit a lawyer application to view your dashboard.</p>
             </div>
           </div>
@@ -139,122 +141,148 @@ const LawyerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#2B3B3A] to-[#1A2A29]">
+    <div className="min-h-screen bg-[#F5F0E6]">
       <div className="flex">
         <LawyerSidebar />
         <div className="ml-64 flex-1 p-6">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            {/* Header Section */}
-            <div className="bg-[#2B3B3A] p-6 text-white">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <img
-                    src={previewUrl || "https://via.placeholder.com/150"}
-                    alt="Profile"
-                    className="h-20 w-20 rounded-full object-cover border-4 border-[#DECEB0] cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={handleImageClick}
-                  />
-                  <input
-                    id="profile-pic"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold">{authData.name}</h1>
-                  <p className="text-[#DECEB0]">Bar Number: {lawyerData.barNumber}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Left Column */}
-                <div className="space-y-6">
-                  {/* Experience & Specialization */}
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">Professional Information</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-sm text-gray-500">Years of Experience</p>
-                        <p className="text-lg font-medium text-[#2B3B3A]">{lawyerData.yearsOfExperience} years</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Specialization</p>
-                        <p className="text-lg font-medium text-[#2B3B3A]">{lawyerData.specialization}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Rates */}
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">Consultation Rates</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <p className="text-sm text-gray-500">Hourly Rate</p>
-                        <p className="text-xl font-bold text-[#2B3B3A]">${lawyerData.hourlyRate}</p>
-                      </div>
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <p className="text-sm text-gray-500">Half-Hour Rate</p>
-                        <p className="text-xl font-bold text-[#2B3B3A]">${lawyerData.halfHourlyRate}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column */}
-                <div className="space-y-6">
-                  {/* About */}
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">About</h3>
-                    <p className="text-gray-700 whitespace-pre-wrap">{lawyerData.about}</p>
-                  </div>
-
-                  {/* Certification */}
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">Certification</h3>
-                    {lawyerData.certificationPic ? (
+          <Routes>
+            <Route path="/" element={<Outlet />} />
+            <Route path="reviews" element={<LawyerReviews />} />
+          </Routes>
+          {!location.pathname.includes('/reviews') && (
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              {/* Header Section */}
+              <div className="bg-[#3A4B4A] p-6 text-white">
+                <div className="flex items-center space-x-4">
+                  <div className="relative group">
+                    <div 
+                      className="relative h-20 w-20 rounded-full overflow-hidden cursor-pointer"
+                      onClick={handleImageClick}
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
+                    >
                       <img
-                        src={`http://localhost:5000/uploads/${lawyerData.certificationPic}`}
-                        alt="Certification"
-                        className="w-full rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setShowEnlargedImage(`http://localhost:5000/uploads/${lawyerData.certificationPic}`)}
+                        src={previewUrl || "https://via.placeholder.com/150"}
+                        alt="Profile"
+                        className="h-full w-full object-cover border-4 border-[#E8D8B0] transition-transform duration-300 group-hover:scale-110"
                       />
-                    ) : (
-                      <p className="text-gray-500">No certification image available</p>
-                    )}
+                      {isHovered && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      id="profile-pic"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                    />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold">{authData.name}</h1>
+                    <p className="text-[#E8D8B0]">Bar Number: {lawyerData.barNumber}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Content */}
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-6">
+                    {/* Experience & Specialization */}
+                    <div className="bg-[#F5F0E6] rounded-xl p-4 border border-[#E8D8B0]/20">
+                      <h3 className="text-lg font-semibold text-[#3A4B4A] mb-4">Professional Information</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-sm text-gray-500">Years of Experience</p>
+                          <p className="text-lg font-medium text-[#3A4B4A]">{lawyerData.yearsOfExperience} years</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Specialization</p>
+                          <p className="text-lg font-medium text-[#3A4B4A]">{lawyerData.specialization}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rates */}
+                    <div className="bg-[#F5F0E6] rounded-xl p-4 border border-[#E8D8B0]/20">
+                      <h3 className="text-lg font-semibold text-[#3A4B4A] mb-4">Consultation Rates</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white rounded-lg p-4 shadow-sm">
+                          <p className="text-sm text-gray-500">Hourly Rate</p>
+                          <p className="text-xl font-bold text-[#3A4B4A]">${lawyerData.hourlyRate}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 shadow-sm">
+                          <p className="text-sm text-gray-500">Half-Hour Rate</p>
+                          <p className="text-xl font-bold text-[#3A4B4A]">${lawyerData.halfHourlyRate}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-6">
+                    {/* About */}
+                    <div className="bg-[#F5F0E6] rounded-xl p-4 border border-[#E8D8B0]/20">
+                      <h3 className="text-lg font-semibold text-[#3A4B4A] mb-4">About</h3>
+                      <p className="text-gray-700 whitespace-pre-wrap">{lawyerData.about}</p>
+                    </div>
+
+                    {/* Certification */}
+                    <div className="bg-[#F5F0E6] rounded-xl p-4 border border-[#E8D8B0]/20">
+                      <h3 className="text-lg font-semibold text-[#3A4B4A] mb-4">Certification</h3>
+                      {lawyerData.certificationPic ? (
+                        <img
+                          src={`http://localhost:5000/uploads/${lawyerData.certificationPic}`}
+                          alt="Certification"
+                          className="w-full rounded-lg shadow-md cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setShowEnlargedImage(`http://localhost:5000/uploads/${lawyerData.certificationPic}`)}
+                        />
+                      ) : (
+                        <p className="text-gray-500">No certification image available</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Options Modal */}
       {showModal && (
-        <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-80 shadow-xl">
-            <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">Profile Picture Options</h3>
-            <div className="space-y-3">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold text-[#3A4B4A] mb-4">Profile Picture Options</h2>
+            <div className="space-y-4">
               <button
                 onClick={() => document.getElementById('profile-pic').click()}
-                className="w-full bg-[#2B3B3A] text-[#DECEB0] px-4 py-2 rounded-lg hover:bg-[#3a4b4a] transition-colors"
+                className="w-full bg-[#3A4B4A] text-[#E8D8B0] py-2 px-4 rounded hover:bg-[#4A5B5A] transition-colors flex items-center justify-center space-x-2"
               >
-                Change Picture
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Change Picture</span>
               </button>
               <button
                 onClick={handleViewImage}
-                className="w-full bg-[#DECEB0] text-[#2B3B3A] px-4 py-2 rounded-lg hover:bg-[#c5b99d] transition-colors"
+                className="w-full bg-[#E8D8B0] text-[#3A4B4A] py-2 px-4 rounded hover:bg-[#DECEB0] transition-colors flex items-center justify-center space-x-2"
               >
-                View Picture
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>View Picture</span>
               </button>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                className="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded hover:bg-gray-300 transition-colors"
               >
                 Cancel
               </button>
@@ -266,10 +294,10 @@ const LawyerDashboard = () => {
       {/* Enlarged Image Modal */}
       {showEnlargedImage && (
         <div className="fixed inset-0 backdrop-blur-md bg-white/30 flex items-center justify-center z-50">
-          <div className="relative">
+          <div className="relative max-w-4xl w-full mx-4">
             <button
               onClick={() => setShowEnlargedImage(false)}
-              className="absolute top-2 right-2 text-[#2B3B3A] hover:text-[#1a2a29]"
+              className="absolute top-2 right-2 text-[#3A4B4A] hover:text-[#4A5B5A] bg-white rounded-full p-2 shadow-lg"
             >
               <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -278,7 +306,7 @@ const LawyerDashboard = () => {
             <img
               src={typeof showEnlargedImage === 'string' ? showEnlargedImage : previewUrl}
               alt="Enlarged"
-              className="max-h-[90vh] max-w-full rounded-lg shadow-xl"
+              className="w-full h-auto rounded-lg shadow-xl object-contain max-h-[90vh]"
             />
           </div>
         </div>

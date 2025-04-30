@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { Star } from "lucide-react";
 
 const LegalAidLogo = ({
   size = "normal",
@@ -160,28 +161,46 @@ const Booking = () => {
   const { authData } = useAuth();
   const navigate = useNavigate();
   const [lawyers, setLawyers] = useState([]);
+  const [lawyerRatings, setLawyerRatings] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedSpecialization, setSelectedSpecialization] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("experience_high_to_low");
 
-  useEffect(() => {
-    fetchLawyers();
-  }, []);
+  const fetchLawyerRatings = async (lawyerId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/reviews/lawyer/${lawyerId}`
+      );
+      const reviews = response.data.reviews || [];
+      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+      const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+      return averageRating;
+    } catch (error) {
+      console.error("Error fetching lawyer ratings:", error);
+      return 0;
+    }
+  };
 
   const fetchLawyers = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         "http://localhost:5000/api/lawyer-applications/approved"
       );
-      console.log("API Response:", response.data); // Debug log
       if (response.data && Array.isArray(response.data)) {
         setLawyers(response.data);
-        console.log("First lawyer data:", response.data[0]); // Debug log
+        
+        // Fetch ratings for each lawyer
+        const ratings = {};
+        for (const lawyer of response.data) {
+          const rating = await fetchLawyerRatings(lawyer.userId._id);
+          ratings[lawyer.userId._id] = rating;
+        }
+        setLawyerRatings(ratings);
       } else {
         setLawyers([]);
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching lawyers:", error);
       Swal.fire({
@@ -189,9 +208,29 @@ const Booking = () => {
         title: "Error",
         text: "Failed to fetch lawyers. Please try again later.",
       });
+    } finally {
       setLoading(false);
     }
   };
+
+  // Initial fetch
+  useEffect(() => {
+    fetchLawyers();
+  }, []);
+
+  // Refresh data when page is focused
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchLawyers();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   const specializations = [
     "all",
@@ -372,11 +411,31 @@ const Booking = () => {
                     {lawyer.yearsOfExperience} years
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-4">
                   <span className="text-sm text-gray-500">Rate</span>
                   <span className="text-lg font-semibold text-[#2B3B3A]">
                     ${lawyer.hourlyRate}/hr
                   </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-500">Rating</span>
+                  <div className="flex items-center">
+                    <span className="text-lg font-semibold text-[#2B3B3A] mr-2">
+                      {lawyerRatings[lawyer.userId._id]?.toFixed(1) || "0.0"}
+                    </span>
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`h-5 w-5 ${
+                            star <= Math.round(lawyerRatings[lawyer.userId._id] || 0)
+                              ? "text-[#E8D8B0] fill-[#E8D8B0]"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

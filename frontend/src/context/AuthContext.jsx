@@ -137,7 +137,8 @@ export const AuthProvider = ({ children }) => {
     isLoading,
     login,
     logout,
-    register
+    register,
+    refreshAuthData: fetchUserProfile
   };
 
   return (

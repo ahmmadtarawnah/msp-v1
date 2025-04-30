@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const LegalAidLogo = ({
   size = "normal",
-  color = "#DECEB0",
+  color = "#E8D8B0",
   hoverColor = "#ffffff",
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -185,15 +185,24 @@ const LawyerSidebar = () => {
         </svg>
       ),
     },
+    {
+      title: 'Client Reviews',
+      path: '/lawyer-dashboard/reviews',
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      ),
+    },
   ];
 
   return (
-    <div className="fixed top-0 left-0 h-screen w-64 bg-[#2B3B3A] text-white">
+    <div className="fixed top-0 left-0 h-screen w-64 bg-[#3A4B4A] text-white">
       {/* Logo and Brand */}
-      <div className="flex items-center justify-center h-20 border-b border-[#3a4b4a]">
+      <div className="flex items-center justify-center h-20 border-b border-[#4A5B5A]">
         <div className="flex items-center space-x-3">
           <LegalAidLogo size="normal" />
-          <span className="text-xl font-bold text-[#DECEB0]">LegalAid</span>
+          <span className="text-xl font-bold text-[#E8D8B0]">LegalAid</span>
         </div>
       </div>
 
@@ -205,8 +214,8 @@ const LawyerSidebar = () => {
             to={item.path}
             className={`flex items-center px-6 py-3 text-sm font-medium transition-colors duration-200 ${
               location.pathname === item.path
-                ? "bg-[#3a4b4a] text-[#DECEB0]"
-                : "text-gray-300 hover:bg-[#3a4b4a] hover:text-[#DECEB0]"
+                ? "bg-[#4A5B5A] text-[#E8D8B0]"
+                : "text-gray-300 hover:bg-[#4A5B5A] hover:text-[#E8D8B0]"
             }`}
           >
             <span className="mr-3">{item.icon}</span>
@@ -217,7 +226,7 @@ const LawyerSidebar = () => {
         {/* Home Button */}
         <button
           onClick={() => navigate('/')}
-          className="w-full flex items-center px-6 py-3 text-sm font-medium text-gray-300 hover:bg-[#3a4b4a] hover:text-[#DECEB0] transition-colors duration-200"
+          className="w-full flex items-center px-6 py-3 text-sm font-medium text-gray-300 hover:bg-[#4A5B5A] hover:text-[#E8D8B0] transition-colors duration-200"
         >
           <span className="mr-3">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

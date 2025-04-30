@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const jwt = require('jsonwebtoken');
 
 // Get all users with statistics
 const getAllUsers = async (req, res) => {
@@ -71,7 +72,18 @@ const updateUserRole = async (req, res) => {
     user.role = role;
     await user.save();
 
-    res.status(200).json({ message: "User role updated successfully", user });
+    // Generate new JWT token with updated role
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1D" }
+    );
+
+    res.status(200).json({ 
+      message: "User role updated successfully", 
+      user,
+      token // Send the new token in the response
+    });
   } catch (error) {
     console.error("Error updating user role:", error);
     res.status(500).json({ message: "Server error while updating user role" });
