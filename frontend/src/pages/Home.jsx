@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MP4Video from "../assets/law-video.mp4";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 // Custom Logo Component with animation
 const LegalAidLogo = ({
@@ -18,7 +19,7 @@ const LegalAidLogo = ({
   };
 
   return (
-    <div
+    <motion.div
       className={`${
         sizeClasses[size]
       } relative cursor-pointer transition-all duration-300 transform ${
@@ -26,6 +27,8 @@ const LegalAidLogo = ({
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
     >
       {/* Custom Scales of Justice Logo with Animation */}
       <svg
@@ -35,33 +38,32 @@ const LegalAidLogo = ({
         className="w-full h-full transition-all duration-300"
       >
         {/* Top Balance Point */}
-        <circle
+        <motion.circle
           cx="12"
           cy="4"
           r="1.5"
           fill={isHovered ? hoverColor : color}
-          className={`transition-all duration-300 ${
-            isHovered ? "animate-pulse" : ""
-          }`}
+          animate={{ scale: isHovered ? [1, 1.2, 1] : 1 }}
+          transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0 }}
         />
 
         {/* Center Bar */}
-        <rect
+        <motion.rect
           x="11.5"
           y="4"
           width="1"
           height="10"
           fill={isHovered ? hoverColor : color}
-          className={`transition-all duration-300 ${
-            isHovered ? "animate-pulse" : ""
-          }`}
+          animate={{ scaleY: isHovered ? [1, 1.1, 1] : 1 }}
+          transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0 }}
         />
 
         {/* Base */}
-        <path
+        <motion.path
           d="M8 20h8l-1-2H9l-1 2z"
           fill={isHovered ? hoverColor : color}
-          className="transition-all duration-300"
+          animate={{ scale: isHovered ? [1, 1.05, 1] : 1 }}
+          transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0 }}
         />
 
         {/* Base Stem */}
@@ -127,38 +129,36 @@ const LegalAidLogo = ({
         />
 
         {/* Small decorative elements */}
-        <circle
+        <motion.circle
           cx="7"
           cy="10"
           r="0.5"
           fill={isHovered ? hoverColor : color}
-          className={`transition-all duration-300 ${
-            isHovered ? "opacity-100" : "opacity-70"
-          }`}
+          animate={{ opacity: isHovered ? [0.7, 1, 0.7] : 0.7 }}
+          transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0 }}
         />
-        <circle
+        <motion.circle
           cx="17"
           cy="10"
           r="0.5"
           fill={isHovered ? hoverColor : color}
-          className={`transition-all duration-300 ${
-            isHovered ? "opacity-100" : "opacity-70"
-          }`}
+          animate={{ opacity: isHovered ? [0.7, 1, 0.7] : 0.7 }}
+          transition={{ duration: 0.5, repeat: isHovered ? Infinity : 0 }}
         />
       </svg>
 
       {/* Glow effect on hover */}
       {isHovered && (
-        <div className="absolute inset-0 rounded-full bg-[#DECEB0] opacity-20 blur-md -z-10"></div>
+        <motion.div 
+          className="absolute inset-0 rounded-full bg-[#DECEB0] opacity-20 blur-md -z-10"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 0.2 }}
+          transition={{ duration: 0.3 }}
+        />
       )}
-    </div>
+    </motion.div>
   );
 };
-// Custom Logo Component with animation
-
-
-
-
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -167,14 +167,13 @@ const Home = () => {
   useEffect(() => {
     const video = document.getElementById("hero-video");
     video.onloadeddata = () => {
-      setLoading(false); // Hide loading spinner when video is loaded
+      setLoading(false);
     };
 
     video.play().catch((error) => {
       console.log("Autoplay prevented:", error);
     });
 
-    // Add scroll event listener
     const handleScroll = () => {
       if (window.scrollY > 300) {
         setShowBackToTop(true);
@@ -198,35 +197,24 @@ const Home = () => {
     <div className="bg-gray-900">
       {/* Back to Top Button */}
       {showBackToTop && (
-        <button
+        <motion.button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-[#2B3B3A] to-[#2B3B3A]/80 p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 animate-fade-in"
-          style={{
-            animation: "fadeIn 0.3s ease-in-out",
-          }}
+          className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-[#2B3B3A] to-[#2B3B3A]/80 p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
         >
           <div className="w-12 h-12 flex items-center justify-center">
             <LegalAidLogo size="small" />
           </div>
-        </button>
+        </motion.button>
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
 
       {/* Hero Section */}
       <div className="relative h-screen w-full overflow-hidden">
-        {/* Video Background with opacity applied */}
+        {/* Video Background */}
         <div className="absolute inset-0 w-full h-full">
           <video
             id="hero-video"
@@ -244,90 +232,190 @@ const Home = () => {
 
         {/* Content */}
         <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
-          <div className="max-w-3xl">
-            {/* Logo and Tagline - REPLACED WITH CUSTOM LOGO */}
-
+          <motion.div 
+            className="max-w-3xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
             {/* Main Heading */}
-            <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+            <motion.h1 
+              className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
               Expert Legal Guidance{" "}
-              <span className="text-[#DECEB0]">When You Need It Most</span>
-            </h1>
+              <motion.span 
+                className="text-[#DECEB0]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                When You Need It Most
+              </motion.span>
+            </motion.h1>
 
             {/* Subheading */}
-            <p className="text-gray-200 text-xl md:text-2xl mb-8 leading-relaxed max-w-2xl">
+            <motion.p 
+              className="text-gray-200 text-xl md:text-2xl mb-8 leading-relaxed max-w-2xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
               Professional legal consultations tailored to your unique
               situation. We navigate complex legal matters so you don't have to.
-            </p>
+            </motion.p>
 
             {/* Features Highlight */}
-            <div className="flex flex-wrap gap-4 mb-8">
-              <div className="bg-[#2B3B3A] bg-opacity-80 py-2 px-4 rounded-lg border border-[#DECEB0] text-[#DECEB0]">
-                Experienced Attorneys
-              </div>
-              <div className="bg-[#2B3B3A] bg-opacity-80 py-2 px-4 rounded-lg border border-[#DECEB0] text-[#DECEB0]">
-                Personalized Advice
-              </div>
-              <div className="bg-[#2B3B3A] bg-opacity-80 py-2 px-4 rounded-lg border border-[#DECEB0] text-[#DECEB0]">
-                Affordable Consultations
-              </div>
-            </div>
+            <motion.div 
+              className="flex flex-wrap gap-6 mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <motion.div 
+                className="flex items-center text-[#DECEB0]"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="w-2 h-2 rounded-full bg-[#DECEB0] mr-3"></div>
+                <span className="text-lg font-medium">Experienced Attorneys</span>
+              </motion.div>
+              <motion.div 
+                className="flex items-center text-[#DECEB0]"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="w-2 h-2 rounded-full bg-[#DECEB0] mr-3"></div>
+                <span className="text-lg font-medium">Personalized Advice</span>
+              </motion.div>
+              <motion.div 
+                className="flex items-center text-[#DECEB0]"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="w-2 h-2 rounded-full bg-[#DECEB0] mr-3"></div>
+                <span className="text-lg font-medium">Affordable Consultations</span>
+              </motion.div>
+            </motion.div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <motion.a
                 href="#book"
                 className="bg-[#DECEB0] hover:bg-white text-[#2B3B3A] font-bold text-lg py-3 px-8 rounded-md transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Book a Consultation
-              </a>
-              <Link
-                to="/become-a-lawyer"
-                className="bg-transparent hover:bg-[#2B3B3A] text-[#DECEB0] font-semibold text-lg py-3 px-8 rounded-md border-2 border-[#DECEB0] hover:border-[#2B3B3A] transition-all duration-300 inline-flex items-center justify-center"
+              </motion.a>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Become a Lawyer
-              </Link>
-            </div>
-          </div>
+                <Link
+                  to="/become-a-lawyer"
+                  className="bg-transparent hover:bg-[#2B3B3A] text-[#DECEB0] font-semibold text-lg py-3 px-8 rounded-md border-2 border-[#DECEB0] hover:border-[#2B3B3A] transition-all duration-300 inline-flex items-center justify-center"
+                >
+                  Become a Lawyer
+                </Link>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
       {/* About Section */}
-      <section id="about" className="py-16 bg-white">
+      <motion.section 
+        id="about" 
+        className="py-16 bg-white"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center gap-12">
             {/* Left side with circular image */}
-            <div className="md:w-1/2 relative">
-              <div className="rounded-full overflow-hidden border-8 border-white shadow-xl relative z-10 max-w-xl mx-auto">
+            <motion.div 
+              className="md:w-1/2 relative"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <motion.div 
+                className="rounded-full overflow-hidden border-8 border-white shadow-xl relative z-10 max-w-xl mx-auto"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
                 <img
                   src="https://images.pexels.com/photos/4427553/pexels-photo-4427553.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                   alt="Attorney consultation"
                   className="w-full h-auto"
                 />
-              </div>
+              </motion.div>
 
-              {/* Updated with LegalAidLogo */}
-              <div className="absolute top-5 left-5 p-3 bg-[#DECEB0] rounded-full shadow-lg">
+              <motion.div 
+                className="absolute top-5 left-5 p-3 bg-[#DECEB0] rounded-full shadow-lg"
+                whileHover={{ scale: 1.1, rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
                 <LegalAidLogo
                   size="small"
                   color="#2B3B3A"
                   hoverColor="#000000"
                 />
-              </div>
+              </motion.div>
 
-              <div className="absolute bottom-8 right-2 w-16 h-16 bg-[#2B3B3A] rounded-full shadow-lg flex items-center justify-center">
+              <motion.div 
+                className="absolute bottom-8 right-2 w-16 h-16 bg-[#2B3B3A] rounded-full shadow-lg flex items-center justify-center"
+                whileHover={{ scale: 1.1, rotate: -360 }}
+                transition={{ duration: 0.5 }}
+              >
                 <LegalAidLogo size="small" />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Right side with text content */}
-            <div className="md:w-1/2 mt-10 md:mt-0">
-              <h3 className="text-[#DECEB0] font-medium text-lg mb-1">
+            <motion.div 
+              className="md:w-1/2 mt-10 md:mt-0"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <motion.h3 
+                className="text-[#DECEB0] font-medium text-lg mb-1"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
                 About Us
-              </h3>
-              <h2 className="text-[#2B3B3A] text-3xl font-bold mb-6">
+              </motion.h3>
+              <motion.h2 
+                className="text-[#2B3B3A] text-3xl font-bold mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
                 We are LegalAid
-              </h2>
-              <p className="text-gray-700 mb-6 leading-relaxed">
+              </motion.h2>
+              <motion.p 
+                className="text-gray-700 mb-6 leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
                 At LegalAid, we are committed to making legal guidance
                 accessible, clear, and effective. Whether you're an individual
                 or a business, navigating legal matters can be complex—but you
@@ -336,10 +424,20 @@ const Home = () => {
                 personal legal matters, and more. We simplify the legal process,
                 ensuring you have the knowledge and confidence to make informed
                 decisions.
-              </p>
+              </motion.p>
 
-              <div className="space-y-4 mb-8">
-                <div className="flex items-start">
+              <motion.div 
+                className="space-y-4 mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                viewport={{ once: true }}
+              >
+                <motion.div 
+                  className="flex items-start"
+                  whileHover={{ x: 10 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <div className="h-6 w-6 rounded-full bg-[#2B3B3A] flex items-center justify-center flex-shrink-0 mt-1">
                     <svg
                       viewBox="0 0 24 24"
@@ -360,9 +458,13 @@ const Home = () => {
                   <p className="ml-3 text-gray-700">
                     Expert attorneys with decades of combined experience
                   </p>
-                </div>
+                </motion.div>
 
-                <div className="flex items-start">
+                <motion.div 
+                  className="flex items-start"
+                  whileHover={{ x: 10 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <div className="h-6 w-6 rounded-full bg-[#2B3B3A] flex items-center justify-center flex-shrink-0 mt-1">
                     <svg
                       viewBox="0 0 24 24"
@@ -383,9 +485,13 @@ const Home = () => {
                   <p className="ml-3 text-gray-700">
                     Personalized solutions tailored to your specific needs
                   </p>
-                </div>
+                </motion.div>
 
-                <div className="flex items-start">
+                <motion.div 
+                  className="flex items-start"
+                  whileHover={{ x: 10 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <div className="h-6 w-6 rounded-full bg-[#2B3B3A] flex items-center justify-center flex-shrink-0 mt-1">
                     <svg
                       viewBox="0 0 24 24"
@@ -406,24 +512,39 @@ const Home = () => {
                   <p className="ml-3 text-gray-700">
                     Transparent pricing with no hidden fees
                   </p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
-              <a
+              <motion.a
                 href="#start-here"
                 className="inline-block bg-[#2B3B3A] text-[#DECEB0] px-8 py-3 rounded-full font-medium hover:bg-[#1a2a29] transition-colors duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Start Here
-              </a>
-            </div>
+              </motion.a>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Services Section */}
-      <section id="services" className="py-16 bg-gray-100">
+      <motion.section 
+        id="services" 
+        className="py-16 bg-gray-100"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
             <h3 className="text-[#DECEB0] font-medium text-lg mb-1">
               What We Offer
             </h3>
@@ -436,15 +557,26 @@ const Home = () => {
               areas, ensuring our clients receive expert guidance when they need
               it most.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Service Card 1 - Updated with Logo */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+            {/* Service Card 1 */}
+            <motion.div 
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
+            >
               <div className="p-6">
-                <div className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mb-4">
+                <motion.div 
+                  className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mb-4"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <LegalAidLogo size="small" />
-                </div>
+                </motion.div>
                 <h3 className="text-xl font-bold text-[#2B3B3A] mb-2">
                   Business Law
                 </h3>
@@ -453,9 +585,11 @@ const Home = () => {
                   including formation, contracts, compliance, and dispute
                   resolution.
                 </p>
-                <a
+                <motion.a
                   href="#business-law"
                   className="text-[#2B3B3A] font-medium hover:text-[#DECEB0] transition-colors inline-flex items-center"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
                 >
                   Learn More
                   <svg
@@ -472,16 +606,27 @@ const Home = () => {
                       d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </a>
+                </motion.a>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Service Card 2 - Updated with Logo */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+            {/* Service Card 2 */}
+            <motion.div 
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
+            >
               <div className="p-6">
-                <div className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mb-4">
+                <motion.div 
+                  className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mb-4"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <LegalAidLogo size="small" />
-                </div>
+                </motion.div>
                 <h3 className="text-xl font-bold text-[#2B3B3A] mb-2">
                   Family Law
                 </h3>
@@ -490,9 +635,11 @@ const Home = () => {
                   custody, adoption, and estate planning with compassion and
                   expertise.
                 </p>
-                <a
+                <motion.a
                   href="#family-law"
                   className="text-[#2B3B3A] font-medium hover:text-[#DECEB0] transition-colors inline-flex items-center"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
                 >
                   Learn More
                   <svg
@@ -509,16 +656,27 @@ const Home = () => {
                       d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </a>
+                </motion.a>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Service Card 3 - Updated with Logo */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:transform hover:scale-105">
+            {/* Service Card 3 */}
+            <motion.div 
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
+            >
               <div className="p-6">
-                <div className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mb-4">
+                <motion.div 
+                  className="w-12 h-12 bg-[#2B3B3A] rounded-full flex items-center justify-center mb-4"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <LegalAidLogo size="small" />
-                </div>
+                </motion.div>
                 <h3 className="text-xl font-bold text-[#2B3B3A] mb-2">
                   Personal Injury
                 </h3>
@@ -526,9 +684,11 @@ const Home = () => {
                   Dedicated representation for victims of accidents and
                   negligence, helping you secure the compensation you deserve.
                 </p>
-                <a
+                <motion.a
                   href="#personal-injury"
                   className="text-[#2B3B3A] font-medium hover:text-[#DECEB0] transition-colors inline-flex items-center"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
                 >
                   Learn More
                   <svg
@@ -545,26 +705,50 @@ const Home = () => {
                       d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </a>
+                </motion.a>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="text-center mt-12">
-            <Link
-              to="/legal-services"
-              className="inline-block bg-[#2B3B3A] text-[#DECEB0] px-8 py-3 rounded-full font-medium hover:bg-[#1a2a29] transition-colors duration-300"
+          <motion.div 
+            className="text-center mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              View All Services
-            </Link>
-          </div>
+              <Link
+                to="/legal-services"
+                className="inline-block bg-[#2B3B3A] text-[#DECEB0] px-8 py-3 rounded-full font-medium hover:bg-[#1a2a29] transition-colors duration-300"
+              >
+                View All Services
+              </Link>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 bg-[#2B3B3A]">
+      <motion.section 
+        id="testimonials" 
+        className="py-16 bg-[#2B3B3A]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
             <h3 className="text-[#DECEB0] font-medium text-lg mb-1">
               Client Experiences
             </h3>
@@ -572,18 +756,29 @@ const Home = () => {
               What Our Clients Say
             </h2>
             <div className="w-24 h-1 bg-[#DECEB0] mx-auto mt-4 mb-6"></div>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Testimonial 1 - Updated with Logo */}
-            <div className="bg-white rounded-lg shadow-lg p-6 relative">
-              <div className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center">
+            {/* Testimonial 1 */}
+            <motion.div 
+              className="bg-white rounded-lg shadow-lg p-6 relative"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <motion.div 
+                className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
                 <LegalAidLogo
                   size="small"
                   color="#2B3B3A"
                   hoverColor="#000000"
                 />
-              </div>
+              </motion.div>
               <div className="mb-4 mt-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -600,7 +795,11 @@ const Home = () => {
                 straightforward, and their advice saved us from several
                 potential pitfalls."
               </p>
-              <div className="flex items-center">
+              <motion.div 
+                className="flex items-center"
+                whileHover={{ x: 5 }}
+                transition={{ duration: 0.3 }}
+              >
                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                   <img
                     src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
@@ -612,18 +811,29 @@ const Home = () => {
                   <h4 className="font-bold text-[#2B3B3A]">Michael Johnson</h4>
                   <p className="text-gray-500 text-sm">Small Business Owner</p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            {/* Testimonial 2 - Updated with Logo */}
-            <div className="bg-white rounded-lg shadow-lg p-6 relative">
-              <div className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center">
+            {/* Testimonial 2 */}
+            <motion.div 
+              className="bg-white rounded-lg shadow-lg p-6 relative"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <motion.div 
+                className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
                 <LegalAidLogo
                   size="small"
                   color="#2B3B3A"
                   hoverColor="#000000"
                 />
-              </div>
+              </motion.div>
               <div className="mb-4 mt-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -640,7 +850,11 @@ const Home = () => {
                 and helped me secure a fair settlement that protected my
                 interests and my children's future."
               </p>
-              <div className="flex items-center">
+              <motion.div 
+                className="flex items-center"
+                whileHover={{ x: 5 }}
+                transition={{ duration: 0.3 }}
+              >
                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                   <img
                     src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
@@ -652,18 +866,29 @@ const Home = () => {
                   <h4 className="font-bold text-[#2B3B3A]">Sarah Thompson</h4>
                   <p className="text-gray-500 text-sm">Family Law Client</p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            {/* Testimonial 3 - Updated with Logo */}
-            <div className="bg-white rounded-lg shadow-lg p-6 relative">
-              <div className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center">
+            {/* Testimonial 3 */}
+            <motion.div 
+              className="bg-white rounded-lg shadow-lg p-6 relative"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <motion.div 
+                className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center"
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
                 <LegalAidLogo
                   size="small"
                   color="#2B3B3A"
                   hoverColor="#000000"
                 />
-              </div>
+              </motion.div>
               <div className="mb-4 mt-4">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -680,7 +905,11 @@ const Home = () => {
                 tirelessly for me and secured a settlement that covered all my
                 expenses and compensated me for my suffering."
               </p>
-              <div className="flex items-center">
+              <motion.div 
+                className="flex items-center"
+                whileHover={{ x: 5 }}
+                transition={{ duration: 0.3 }}
+              >
                 <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
                   <img
                     src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
@@ -694,16 +923,29 @@ const Home = () => {
                     Personal Injury Client
                   </p>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-16 bg-white">
+      <motion.section 
+        id="faq" 
+        className="py-16 bg-white"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
             <h3 className="text-[#DECEB0] font-medium text-lg mb-1">
               Common Questions
             </h3>
@@ -715,15 +957,26 @@ const Home = () => {
               We've compiled answers to questions we commonly receive from our
               clients to help you better understand our services.
             </p>
-          </div>
+          </motion.div>
 
           <div className="max-w-3xl mx-auto">
-            {/* FAQ Item 1 - Updated with Logo */}
-            <div className="mb-6 border-b border-gray-200 pb-6">
+            {/* FAQ Item 1 */}
+            <motion.div 
+              className="mb-6 border-b border-gray-200 pb-6"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              viewport={{ once: true }}
+              whileHover={{ x: 5 }}
+            >
               <h3 className="text-xl font-bold text-[#2B3B3A] mb-2 flex items-center">
-                <div className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                <motion.div 
+                  className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <LegalAidLogo size="small" />
-                </div>
+                </motion.div>
                 How do I know if I need legal representation?
               </h3>
               <div className="pl-11">
@@ -735,14 +988,25 @@ const Home = () => {
                   professional legal assistance would benefit your case.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             {/* FAQ Item 2 */}
-            <div className="mb-6 border-b border-gray-200 pb-6">
+            <motion.div 
+              className="mb-6 border-b border-gray-200 pb-6"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              viewport={{ once: true }}
+              whileHover={{ x: 5 }}
+            >
               <h3 className="text-xl font-bold text-[#2B3B3A] mb-2 flex items-center">
-                <div className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                <motion.div 
+                  className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <span className="text-[#DECEB0] font-medium">Q</span>
-                </div>
+                </motion.div>
                 What should I bring to my first consultation?
               </h3>
               <div className="pl-11">
@@ -755,14 +1019,25 @@ const Home = () => {
                   your situation.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             {/* FAQ Item 3 */}
-            <div className="mb-6 border-b border-gray-200 pb-6">
+            <motion.div 
+              className="mb-6 border-b border-gray-200 pb-6"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              viewport={{ once: true }}
+              whileHover={{ x: 5 }}
+            >
               <h3 className="text-xl font-bold text-[#2B3B3A] mb-2 flex items-center">
-                <div className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                <motion.div 
+                  className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <span className="text-[#DECEB0] font-medium">Q</span>
-                </div>
+                </motion.div>
                 How are your legal fees structured?
               </h3>
               <div className="pl-11">
@@ -776,14 +1051,25 @@ const Home = () => {
                   transparency about costs.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
             {/* FAQ Item 4 */}
-            <div className="mb-6">
+            <motion.div 
+              className="mb-6"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              viewport={{ once: true }}
+              whileHover={{ x: 5 }}
+            >
               <h3 className="text-xl font-bold text-[#2B3B3A] mb-2 flex items-center">
-                <div className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                <motion.div 
+                  className="w-8 h-8 bg-[#2B3B3A] rounded-full flex items-center justify-center mr-3 flex-shrink-0"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <span className="text-[#DECEB0] font-medium">Q</span>
-                </div>
+                </motion.div>
                 How long will my case take to resolve?
               </h3>
               <div className="pl-11">
@@ -797,19 +1083,27 @@ const Home = () => {
                   and expected timelines.
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="text-center mt-10">
-            <a
+          <motion.div 
+            className="text-center mt-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+            viewport={{ once: true }}
+          >
+            <motion.a
               href="#more-faqs"
               className="inline-block bg-[#2B3B3A] text-[#DECEB0] px-8 py-3 rounded-full font-medium hover:bg-[#1a2a29] transition-colors duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               View More FAQs
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Loading Spinner */}
       {loading && (
@@ -818,4 +1112,5 @@ const Home = () => {
     </div>
   );
 };
+
 export default Home;

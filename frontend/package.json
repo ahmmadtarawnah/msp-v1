@@ -23,6 +23,7 @@
     "lobibox": "^1.2.7",
     "lucide-react": "^0.483.0",
     "mongoose": "^8.13.0",
+    "motion": "^12.9.2",
     "notistack": "^3.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
