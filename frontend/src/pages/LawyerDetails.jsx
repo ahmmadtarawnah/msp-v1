@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import StyledCheckbox from "../components/StyledCheckbox";
 import StyledButton from "../components/StyledButton";
 import ReviewComponent from "../components/ReviewComponent";
+import BookingForm from '../components/BookingForm';
 
 // Import the LegalAidLogo component from wherever you've defined it
 // Alternatively, I'll include a simplified version here:
@@ -165,6 +166,7 @@ const LawyerDetails = () => {
   const { lawyer } = location.state || {};
   const [selectedRate, setSelectedRate] = useState("hourly");
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+  const [showBookingForm, setShowBookingForm] = useState(false);
 
   if (!lawyer) {
     navigate("/booking");
@@ -172,56 +174,26 @@ const LawyerDetails = () => {
   }
 
   const handleBook = () => {
+    if (!user) {
     Swal.fire({
-      title: "Select Consultation Duration",
-      background: "#FFFFFF",
-      color: "#2B3B3A",
-      iconColor: "#DECEB0",
-      confirmButtonColor: "#2B3B3A",
-      cancelButtonColor: "#d33",
-      showClass: {
-        popup: "animate__animated animate__fadeIn animate__faster",
-      },
-      html: `
-        <div class="space-y-4">
-          <div class="flex items-center space-x-4">
-            <input type="radio" id="hourly" name="rate" value="hourly" checked class="w-4 h-4 text-[#2B3B3A] border-gray-300 focus:ring-[#2B3B3A]">
-            <label for="hourly" class="text-lg">
-              1 Hour Consultation - $${lawyer.hourlyRate}
-            </label>
-          </div>
-          <div class="flex items-center space-x-4">
-            <input type="radio" id="halfHourly" name="rate" value="halfHourly" class="w-4 h-4 text-[#2B3B3A] border-gray-300 focus:ring-[#2B3B3A]">
-            <label for="halfHourly" class="text-lg">
-              30 Minutes Consultation - $${lawyer.halfHourlyRate}
-            </label>
-          </div>
-        </div>
-      `,
+        title: "Login Required",
+        text: "Please login to book a consultation",
+        icon: "info",
       showCancelButton: true,
-      confirmButtonText: "Proceed to Booking",
+        confirmButtonText: "Login",
       cancelButtonText: "Cancel",
-      preConfirm: () => {
-        const selected = document.querySelector(
-          'input[name="rate"]:checked'
-        ).value;
-        setSelectedRate(selected);
-        return selected;
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          icon: "success",
-          title: "Booking Initiated",
-          text: `You have selected ${
-            result.value === "hourly" ? "1 hour" : "30 minutes"
-          } consultation with ${lawyer.userId.name}`,
           confirmButtonColor: "#2B3B3A",
           background: "#FFFFFF",
           iconColor: "#DECEB0",
-        });
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/login");
       }
     });
+      return;
+    }
+
+    setShowBookingForm(true);
   };
 
   return (
@@ -611,6 +583,14 @@ const LawyerDetails = () => {
           </div>
         </div>
       </div>
+
+      {showBookingForm && (
+        <BookingForm
+          lawyer={lawyer}
+          selectedRate={selectedRate}
+          onClose={() => setShowBookingForm(false)}
+        />
+      )}
     </div>
   );
 };

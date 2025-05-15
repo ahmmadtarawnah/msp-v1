@@ -11,6 +11,8 @@ const profileRoutes = require("./routes/profileRoutes"); // Add this import for 
 const adminRoutes = require("./routes/adminRoutes");
 const lawyerApplicationRoutes = require("./routes/lawyerApplicationRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 app.use(express.json());
@@ -36,6 +38,8 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/lawyer-applications", lawyerApplicationRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/appointments", appointmentRoutes);
+app.use("/api/payments", paymentRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

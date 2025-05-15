@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 // Reusing the LegalAidLogo component from Home page
 const LegalAidLogo = ({
@@ -167,7 +168,28 @@ const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
+
+  const fetchAppointments = async () => {
+    try {
+      const appointmentsResponse = await axios.get(
+        `http://localhost:5000/api/appointments/user/${authData.userId}`,
+        {
+          headers: { Authorization: `Bearer ${authData.token}` },
+        }
+      );
+      setAppointments(appointmentsResponse.data);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to fetch appointments. Please try again.',
+        confirmButtonColor: '#2B3B3A'
+      });
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -186,6 +208,9 @@ const Profile = () => {
           username: response.data.username,
           password: "",
         });
+
+        // Fetch appointments
+        await fetchAppointments();
       } catch (error) {
         console.error("Error fetching profile:", error);
       } finally {
@@ -261,6 +286,112 @@ const Profile = () => {
       console.error("Error updating profile:", error);
       setFormErrors({ submit: "Error updating profile. Please try again." });
     }
+  };
+
+  const handlePayment = async (appointmentId) => {
+    try {
+      // Show payment form
+      const { value: formValues } = await Swal.fire({
+        title: 'Complete Payment',
+        html: `
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+              <input id="cardNumber" class="swal2-input" placeholder="1234 5678 9012 3456" maxlength="19">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+              <input id="cardName" class="swal2-input" placeholder="John Doe">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                <input id="expiryDate" class="swal2-input" placeholder="MM/YY" maxlength="5">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                <input id="cvv" class="swal2-input" placeholder="123" maxlength="3">
+              </div>
+            </div>
+          </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Complete Payment',
+        confirmButtonColor: '#2B3B3A',
+        cancelButtonText: 'Cancel',
+        preConfirm: () => {
+          return {
+            cardNumber: document.getElementById('cardNumber').value,
+            cardName: document.getElementById('cardName').value,
+            expiryDate: document.getElementById('expiryDate').value,
+            cvv: document.getElementById('cvv').value
+          }
+        }
+      });
+
+      if (formValues) {
+        // Process payment
+        const response = await axios.post(
+          'http://localhost:5000/api/payments',
+          {
+            appointmentId,
+            paymentMethod: 'card',
+            cardDetails: formValues
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authData.token}`
+            }
+          }
+        );
+
+        if (response.data) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Payment Successful',
+            text: 'Your consultation has been confirmed!',
+            confirmButtonColor: '#2B3B3A'
+          });
+          // Refresh appointments
+          fetchAppointments();
+        }
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Payment Failed',
+        text: error.response?.data?.message || 'Failed to process payment. Please try again.',
+        confirmButtonColor: '#2B3B3A'
+      });
+    }
+  };
+
+  const getStatusBadgeClasses = (status) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "confirmed":
+        return "bg-green-100 text-green-800";
+      case "completed":
+        return "bg-blue-100 text-blue-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const options = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   if (loading) {
@@ -516,6 +647,55 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
+              )}
+            </div>
+
+            {/* Appointments Section */}
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+              <h2 className="text-2xl font-bold text-[#2B3B3A] mb-6">Your Appointments</h2>
+              {appointments.length > 0 ? (
+                <div className="space-y-4">
+                  {appointments.map((appointment) => (
+                    <div key={appointment._id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-semibold text-[#2B3B3A]">
+                            Consultation with {appointment.lawyerId?.name || 'Lawyer'}
+                          </h3>
+                          <p className="text-gray-600">
+                            Date: {new Date(appointment.date).toLocaleDateString()}
+                          </p>
+                          <p className="text-gray-600">
+                            Time: {appointment.time}
+                          </p>
+                          <p className="text-gray-600">
+                            Duration: {appointment.duration} minutes
+                          </p>
+                          {appointment.lawyerId?.application && (
+                            <p className="text-gray-600">
+                              Rate: ${appointment.duration === 60 
+                                ? appointment.lawyerId.application.hourlyRate 
+                                : appointment.lawyerId.application.halfHourlyRate}
+                            </p>
+                          )}
+                          <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusBadgeClasses(appointment.status)}`}>
+                            {appointment.status}
+                          </span>
+                        </div>
+                        {appointment.status === 'confirmed' && (
+                          <button
+                            onClick={() => handlePayment(appointment._id)}
+                            className="bg-[#2B3B3A] text-white px-4 py-2 rounded-lg hover:bg-[#1a2a29] transition-colors"
+                          >
+                            Complete Payment
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-600">No appointments found.</p>
               )}
             </div>
           </div>
