@@ -11,6 +11,7 @@ import Footer from "./shared/Footer";
 import Loader from "./shared/Loader"; // Changed from loader to Loader
 import { useAuth } from "./context/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
+import VideoCall from './components/VideoCall';
 
 import Home from "./pages/Home";
 import ContactUs from "./pages/Contactus";
@@ -81,6 +82,7 @@ const AppRoutes = ({ loading }) => {
           <Route path="/lawyer-details" element={<LawyerDetails />} />
           <Route path="/about" element={<About />} />
           <Route path="/legal-services" element={<LegalServices />} />
+          <Route path="/video-call/:appointmentId" element={<VideoCall />} />
         </Routes>
       </main>
 

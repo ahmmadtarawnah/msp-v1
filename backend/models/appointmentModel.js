@@ -28,6 +28,17 @@ const appointmentSchema = new mongoose.Schema({
     enum: ["pending", "confirmed", "completed", "cancelled"],
     default: "pending"
   },
+  videoCallStatus: {
+    type: String,
+    enum: ["not_started", "in_progress", "ended"],
+    default: "not_started"
+  },
+  videoCallStartTime: {
+    type: Date
+  },
+  videoCallEndTime: {
+    type: Date
+  },
   notes: String,
   createdAt: {
     type: Date,

@@ -262,11 +262,78 @@ const getUserAppointments = async (req, res) => {
   }
 };
 
+// Start video call
+const startVideoCall = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Check if the user is authorized to start the call
+    if (
+      appointment.userId.toString() !== req.userId &&
+      appointment.lawyerId.toString() !== req.userId
+    ) {
+      return res.status(403).json({ message: 'Not authorized to start this call' });
+    }
+
+    // Check if the appointment is completed (paid)
+    if (appointment.status !== 'completed') {
+      return res.status(400).json({ message: 'Appointment must be completed before starting the call' });
+    }
+
+    // Update video call status
+    appointment.videoCallStatus = 'in_progress';
+    appointment.videoCallStartTime = new Date();
+    await appointment.save();
+
+    res.status(200).json(appointment);
+  } catch (error) {
+    console.error('Error starting video call:', error);
+    res.status(500).json({ message: 'Error starting video call' });
+  }
+};
+
+// End video call
+const endVideoCall = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Check if the user is authorized to end the call
+    if (
+      appointment.userId.toString() !== req.userId &&
+      appointment.lawyerId.toString() !== req.userId
+    ) {
+      return res.status(403).json({ message: 'Not authorized to end this call' });
+    }
+
+    // Update video call status
+    appointment.videoCallStatus = 'ended';
+    appointment.videoCallEndTime = new Date();
+    await appointment.save();
+
+    res.status(200).json(appointment);
+  } catch (error) {
+    console.error('Error ending video call:', error);
+    res.status(500).json({ message: 'Error ending video call' });
+  }
+};
+
 module.exports = {
   createAppointment,
   getAppointments,
   getAppointmentById,
   updateAppointmentStatus,
   getLawyerAppointments,
-  getUserAppointments
+  getUserAppointments,
+  startVideoCall,
+  endVideoCall
 }; 

@@ -3,11 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import Swal from "sweetalert2";
 import LawyerSidebar from "../components/LawyerSidebar";
+import { useNavigate } from 'react-router-dom';
 
 const LawyerAppointments = () => {
   const { authData } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAppointments();
@@ -73,6 +75,27 @@ const LawyerAppointments = () => {
         title: "Error",
         text: `Failed to update appointment: ${errorMessage}`,
         confirmButtonColor: "#2B3B3A"
+      });
+    }
+  };
+
+  const handleStartVideoCall = async (appointmentId) => {
+    try {
+      const response = await axios.post(`http://localhost:5000/api/appointments/${appointmentId}/start-call`, {}, {
+        headers: {
+          Authorization: `Bearer ${authData.token}`
+        }
+      });
+
+      if (response.status === 200) {
+        navigate(`/video-call/${appointmentId}`);
+      }
+    } catch (error) {
+      console.error('Error starting video call:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to start video call. Please try again.'
       });
     }
   };
@@ -158,6 +181,22 @@ const LawyerAppointments = () => {
                               Reject
                             </button>
                           </div>
+                        )}
+                        {appointment.status === 'completed' && appointment.videoCallStatus === 'not_started' && (
+                          <button
+                            className="btn btn-success"
+                            onClick={() => handleStartVideoCall(appointment._id)}
+                          >
+                            Start Video Call
+                          </button>
+                        )}
+                        {appointment.status === 'completed' && appointment.videoCallStatus === 'in_progress' && (
+                          <button
+                            className="btn btn-info"
+                            onClick={() => navigate(`/video-call/${appointment._id}`)}
+                          >
+                            Join Video Call
+                          </button>
                         )}
                       </div>
                     </div>

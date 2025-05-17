@@ -290,36 +290,82 @@ const Profile = () => {
 
   const handlePayment = async (appointmentId) => {
     try {
+      // Find the appointment to get the rate
+      const appointment = appointments.find(apt => apt._id === appointmentId);
+      const amount = appointment.duration === 60 
+        ? appointment.lawyerId.application.hourlyRate 
+        : appointment.lawyerId.application.halfHourlyRate;
+
       // Show payment form
       const { value: formValues } = await Swal.fire({
-        title: 'Complete Payment',
+        title: '<div class="text-2xl font-bold text-[#2B3B3A]">Complete Payment</div>',
         html: `
+          <div class="space-y-6 p-4">
+            <div class="bg-[#2B3B3A]/5 p-4 rounded-lg">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-gray-600">Total Amount</span>
+                <span class="text-2xl font-bold text-[#2B3B3A]">$${amount.toFixed(2)}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm text-gray-500">
+                <span>Consultation Fee (${appointment.duration} minutes)</span>
+                <span>$${amount.toFixed(2)}</span>
+              </div>
+            </div>
+
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-              <input id="cardNumber" class="swal2-input" placeholder="1234 5678 9012 3456" maxlength="19">
+                <div class="relative">
+                  <input id="cardNumber" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="1234 5678 9012 3456" maxlength="19">
+                  <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                  </div>
+                </div>
             </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
-              <input id="cardName" class="swal2-input" placeholder="John Doe">
+                <input id="cardName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="John Doe">
             </div>
+
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                <input id="expiryDate" class="swal2-input" placeholder="MM/YY" maxlength="5">
+                  <input id="expiryDate" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="MM/YY" maxlength="5">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                <input id="cvv" class="swal2-input" placeholder="123" maxlength="3">
+                  <div class="relative">
+                    <input id="cvv" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="123" maxlength="3">
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div class="flex items-center space-x-2 text-sm text-gray-500">
+              <svg class="w-5 h-5 text-[#DECEB0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span>Your payment information is secure and encrypted</span>
             </div>
           </div>
         `,
-        focusConfirm: false,
         showCancelButton: true,
-        confirmButtonText: 'Complete Payment',
+        confirmButtonText: 'Pay Now',
         confirmButtonColor: '#2B3B3A',
         cancelButtonText: 'Cancel',
+        customClass: {
+          popup: 'rounded-xl',
+          confirmButton: 'px-8 py-3 text-lg font-medium',
+          cancelButton: 'px-8 py-3 text-lg font-medium'
+        },
         preConfirm: () => {
           return {
             cardNumber: document.getElementById('cardNumber').value,
@@ -347,11 +393,27 @@ const Profile = () => {
         );
 
         if (response.data) {
-          Swal.fire({
+          await Swal.fire({
             icon: 'success',
-            title: 'Payment Successful',
-            text: 'Your consultation has been confirmed!',
-            confirmButtonColor: '#2B3B3A'
+            title: '<div class="text-2xl font-bold text-[#2B3B3A]">Payment Successful!</div>',
+            html: `
+              <div class="space-y-4">
+                <div class="flex justify-center">
+                  <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-gray-600">Your consultation has been confirmed!</p>
+                <p class="text-sm text-gray-500">A confirmation email has been sent to your registered email address.</p>
+              </div>
+            `,
+            confirmButtonColor: '#2B3B3A',
+            customClass: {
+              popup: 'rounded-xl',
+              confirmButton: 'px-8 py-3 text-lg font-medium'
+            }
           });
           // Refresh appointments
           fetchAppointments();
@@ -359,11 +421,47 @@ const Profile = () => {
       }
     } catch (error) {
       console.error('Error processing payment:', error);
+      await Swal.fire({
+        icon: 'error',
+        title: '<div class="text-2xl font-bold text-[#2B3B3A]">Payment Failed</div>',
+        html: `
+          <div class="space-y-4">
+            <div class="flex justify-center">
+              <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+            </div>
+            <p class="text-gray-600">${error.response?.data?.message || 'Failed to process payment. Please try again.'}</p>
+          </div>
+        `,
+        confirmButtonColor: '#2B3B3A',
+        customClass: {
+          popup: 'rounded-xl',
+          confirmButton: 'px-8 py-3 text-lg font-medium'
+        }
+      });
+    }
+  };
+
+  const handleStartVideoCall = async (appointmentId) => {
+    try {
+      const response = await axios.post(`http://localhost:5000/api/appointments/${appointmentId}/start-call`, {}, {
+        headers: {
+          Authorization: `Bearer ${authData.token}`
+        }
+      });
+
+      if (response.status === 200) {
+        navigate(`/video-call/${appointmentId}`);
+      }
+    } catch (error) {
+      console.error('Error starting video call:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Payment Failed',
-        text: error.response?.data?.message || 'Failed to process payment. Please try again.',
-        confirmButtonColor: '#2B3B3A'
+        title: 'Error',
+        text: 'Failed to start video call. Please try again.'
       });
     }
   };
@@ -682,14 +780,32 @@ const Profile = () => {
                             {appointment.status}
                           </span>
                         </div>
-                        {appointment.status === 'confirmed' && (
-                          <button
-                            onClick={() => handlePayment(appointment._id)}
-                            className="bg-[#2B3B3A] text-white px-4 py-2 rounded-lg hover:bg-[#1a2a29] transition-colors"
-                          >
-                            Complete Payment
-                          </button>
-                        )}
+                        <div className="appointment-actions">
+                          {appointment.status === 'confirmed' && (
+                            <button
+                              className="btn btn-primary"
+                              onClick={() => handlePayment(appointment._id)}
+                            >
+                              Complete Payment
+                            </button>
+                          )}
+                          {appointment.status === 'completed' && appointment.videoCallStatus === 'not_started' && (
+                            <button
+                              className="btn btn-success"
+                              onClick={() => handleStartVideoCall(appointment._id)}
+                            >
+                              Start Video Call
+                            </button>
+                          )}
+                          {appointment.status === 'completed' && appointment.videoCallStatus === 'in_progress' && (
+                            <button
+                              className="btn btn-info"
+                              onClick={() => navigate(`/video-call/${appointment._id}`)}
+                            >
+                              Join Video Call
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}

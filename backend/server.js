@@ -13,6 +13,7 @@ const lawyerApplicationRoutes = require("./routes/lawyerApplicationRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const videoRoutes = require("./routes/videoRoutes");
 
 const app = express();
 app.use(express.json());
@@ -40,6 +41,7 @@ app.use("/api/lawyer-applications", lawyerApplicationRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/video", videoRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
