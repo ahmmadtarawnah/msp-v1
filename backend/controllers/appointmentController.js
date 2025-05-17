@@ -203,7 +203,7 @@ const getLawyerAppointments = async (req, res) => {
 
     const appointments = await Appointment.find({ lawyerId })
       .populate('userId', 'name username')
-      .sort({ date: -1, time: -1 });
+      .sort({ createdAt: -1 });
 
     res.status(200).json(appointments);
   } catch (error) {
@@ -224,38 +224,35 @@ const getUserAppointments = async (req, res) => {
 
     const appointments = await Appointment.find({ userId })
       .populate('lawyerId', 'name username')
-      .sort({ date: 1, time: 1 });
+      .sort({ createdAt: -1 });
 
-    // Get lawyer applications for the appointments
+    // Get lawyer applications separately to avoid population issues
     const lawyerIds = appointments.map(app => app.lawyerId._id);
     const lawyerApplications = await LawyerApplication.find({
       userId: { $in: lawyerIds },
       status: 'approved'
-    }).populate('userId', 'name username');
+    });
 
-    // Create a map of lawyer applications by userId
-    const lawyerMap = lawyerApplications.reduce((map, app) => {
-      map[app.userId._id.toString()] = app;
+    // Create a map of lawyer applications for easy lookup
+    const lawyerApplicationMap = lawyerApplications.reduce((map, app) => {
+      map[app.userId.toString()] = app;
       return map;
     }, {});
 
-    // Add lawyer application data to appointments
-    const appointmentsWithLawyerData = appointments.map(appointment => {
-      const lawyerApp = lawyerMap[appointment.lawyerId._id.toString()];
+    // Attach lawyer applications to appointments
+    const appointmentsWithApplications = appointments.map(appointment => {
+      const lawyerId = appointment.lawyerId._id.toString();
+      const application = lawyerApplicationMap[lawyerId];
       return {
         ...appointment.toObject(),
         lawyerId: {
           ...appointment.lawyerId.toObject(),
-          application: lawyerApp ? {
-            specialization: lawyerApp.specialization,
-            hourlyRate: lawyerApp.hourlyRate,
-            halfHourlyRate: lawyerApp.halfHourlyRate
-          } : null
+          application: application || null
         }
       };
     });
 
-    res.status(200).json(appointmentsWithLawyerData);
+    res.status(200).json(appointmentsWithApplications);
   } catch (error) {
     console.error('Error fetching user appointments:', error);
     res.status(500).json({ message: error.message });
