@@ -203,7 +203,7 @@ const getLawyerAppointments = async (req, res) => {
 
     const appointments = await Appointment.find({ lawyerId })
       .populate('userId', 'name username')
-      .sort({ date: 1, time: 1 });
+      .sort({ date: -1, time: -1 });
 
     res.status(200).json(appointments);
   } catch (error) {
