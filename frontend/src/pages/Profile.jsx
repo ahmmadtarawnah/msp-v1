@@ -172,16 +172,6 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const fetchAppointments = async () => {
-    if (!authData || !authData.userId) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'User not authenticated. Please log in again.',
-        confirmButtonColor: '#2B3B3A'
-      });
-      navigate('/login');
-      return;
-    }
     try {
       const appointmentsResponse = await axios.get(
         `http://localhost:5000/api/appointments/user/${authData.userId}`,
