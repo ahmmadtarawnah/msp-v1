@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext"; // Importing useAuth hook
-import { useNavigate, Link } from "react-router-dom"; // Importing useNavigate and Link for navigation
-import Swal from "sweetalert2"; // Import SweetAlert2
+import { useAuth } from "../context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
-// Add import for LegalAidLogo component
+// Enhanced LegalAid Logo with subtle animations
 const LegalAidLogo = ({
   size = "normal",
   color = "#2B3B3A",
@@ -15,8 +15,9 @@ const LegalAidLogo = ({
   const sizeClasses = {
     small: "h-6 w-6",
     normal: "h-10 w-10",
-    large: "h-12 w-12", // Make the large size even bigger
+    large: "h-12 w-12",
   };
+
   return (
     <div
       className={`${
@@ -27,7 +28,7 @@ const LegalAidLogo = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Custom Scales of Justice Logo with Animation */}
+      {/* Custom Scales of Justice Logo */}
       <svg
         viewBox="0 0 24 24"
         fill="none"
@@ -49,9 +50,7 @@ const LegalAidLogo = ({
           width="1"
           height="10"
           fill={isHovered ? hoverColor : color}
-          className={`transition-all duration-300 ${
-            isHovered ? "animate-pulse" : ""
-          }`}
+          className="transition-all duration-300"
         />
         <path
           d="M8 20h8l-1-2H9l-1 2z"
@@ -95,9 +94,7 @@ const LegalAidLogo = ({
           y2="10"
           stroke={isHovered ? hoverColor : color}
           strokeWidth="1"
-          className={`transition-all duration-300 ${
-            isHovered ? "transform rotate-3" : ""
-          }`}
+          className="transition-all duration-300"
         />
         <line
           x1="12"
@@ -106,31 +103,25 @@ const LegalAidLogo = ({
           y2="10"
           stroke={isHovered ? hoverColor : color}
           strokeWidth="1"
-          className={`transition-all duration-300 ${
-            isHovered ? "transform -rotate-3" : ""
-          }`}
+          className="transition-all duration-300"
         />
         <circle
           cx="7"
           cy="10"
           r="0.5"
           fill={isHovered ? hoverColor : color}
-          className={`transition-all duration-300 ${
-            isHovered ? "opacity-100" : "opacity-70"
-          }`}
+          className="transition-all duration-300"
         />
         <circle
           cx="17"
           cy="10"
           r="0.5"
           fill={isHovered ? hoverColor : color}
-          className={`transition-all duration-300 ${
-            isHovered ? "opacity-100" : "opacity-70"
-          }`}
+          className="transition-all duration-300"
         />
       </svg>
 
-      {/* Glow effect on hover */}
+      {/* Subtle glow effect on hover */}
       {isHovered && (
         <div className="absolute inset-0 rounded-full bg-[#DECEB0] opacity-20 blur-md -z-10"></div>
       )}
@@ -141,9 +132,10 @@ const LegalAidLogo = ({
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { authData, logout } = useAuth(); // Get authentication state and logout function from context
-  const navigate = useNavigate(); // Initialize the navigate function to redirect
+  const { authData, logout } = useAuth();
+  const navigate = useNavigate();
 
+  // Track scroll position for navbar styling
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 10;
@@ -158,126 +150,175 @@ const Navbar = () => {
     };
   }, [scrolled]);
 
+  // Close mobile menu when navigating or resizing to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [mobileMenuOpen]);
+
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
       text: "You will be logged out and redirected to the home page.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#2B3B3A", // Matching the navbar color
+      confirmButtonColor: "#2B3B3A",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, log me out!",
       cancelButtonText: "No, cancel!",
     }).then((result) => {
       if (result.isConfirmed) {
-        logout(); // Clear user session
-        navigate("/"); // Redirect to home page after logout
+        logout();
+        navigate("/");
       }
     });
   };
 
+  // Navigation links configuration for DRY code
+  const navLinks = [
+    { path: "/Booking", label: "Book Session", showFor: ["all"] },
+    { path: "/Blogs", label: "Blogs", showFor: ["all"] },
+    { path: "/about", label: "About", showFor: ["all"] },
+    { path: "/Contact", label: "Contact", showFor: ["all"] },
+    {
+      path: "/lawyer-dashboard",
+      label: "Lawyer Dashboard",
+      showFor: ["lawyer"],
+    },
+    { path: "/admin-dashboard", label: "Admin Dashboard", showFor: ["admin"] },
+  ];
+
   return (
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "h-16 shadow-md" : "h-20"
-      } bg-[#DECEB0]`}
+        scrolled
+          ? "bg-[#DECEB0]/95 backdrop-blur-sm h-16 shadow-lg"
+          : "bg-[#DECEB0] h-20"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
-          {/* Logo and Website Name */}
-          <div className="flex items-center">
-            <a href="/" className="group flex items-center cursor-pointer">
-              <div className="text-[#2B3B3A] mr-2 transition-transform duration-700 ease-in-out transform group-hover:scale-110">
-                <LegalAidLogo size="large" />
+          {/* Logo and Brand Name */}
+          <Link to="/" className="group flex items-center space-x-2">
+            <div className="transition-transform duration-500 transform group-hover:scale-110">
+              <LegalAidLogo size="normal" />
+            </div>
+            <span className="text-[#2B3B3A] font-bold text-2xl tracking-tight">
+              Legal<span className="font-extrabold">Aid</span>
+            </span>
+          </Link>
+
+          {/* Desktop Navigation - New horizontal pill design */}
+          <div className="hidden md:flex items-center">
+            <div className="bg-[#2B3B3A]/10 rounded-full p-1 mr-4">
+              <div className="flex space-x-1">
+                {navLinks.map((link) => {
+                  // Only show links that are for everyone or match the user's role
+                  if (
+                    link.showFor.includes("all") ||
+                    (authData && link.showFor.includes(authData.role))
+                  ) {
+                    return (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        className="px-4 py-2 text-[#2B3B3A] font-medium rounded-full hover:bg-[#2B3B3A]/20 transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    );
+                  }
+                  return null;
+                })}
               </div>
-              <h1 className="text-[#2B3B3A] text-2xl font-bold tracking-wide animate-fadeIn">
-                LegalAid
-              </h1>
-            </a>
+            </div>
+
+            {/* Authentication Buttons */}
+            <div className="flex items-center space-x-2">
+              {!authData ? (
+                <Link
+                  to="/Login"
+                  className="bg-[#2B3B3A] text-[#DECEB0] px-5 py-2.5 rounded-full hover:bg-[#1a2a29] transition-colors duration-300 font-medium flex items-center"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-1"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Login
+                </Link>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  {authData && authData.role !== "lawyer" && (
+                    <Link
+                      to="/Profile"
+                      className="bg-[#2B3B3A]/10 text-[#2B3B3A] px-4 py-2.5 rounded-full hover:bg-[#2B3B3A]/20 transition-colors duration-300 font-medium flex items-center"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                      Profile
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="bg-[#2B3B3A] text-[#DECEB0] px-4 py-2.5 rounded-full hover:bg-[#1a2a29] transition-colors duration-300 font-medium flex items-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {/* Show different options based on role */}
-            {authData && (
-              <>
-                {authData.role === "lawyer" && (
-                  <Link
-                    to="/lawyer-dashboard"
-                    className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-                  >
-                    Lawyer Dashboard
-                  </Link>
-                )}
-                {authData.role === "admin" && (
-                  <Link
-                    to="/admin-dashboard"
-                    className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-                  >
-                    Admin Dashboard
-                  </Link>
-                )}
-                <Link
-                  to="/Booking"
-                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-                >
-                  Book Session
-                </Link>
-                <Link
-                  to="/Blogs"
-                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-                >
-                  Blogs
-                </Link>
-                <Link
-                  to="/about"
-                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-                >
-                  About
-                </Link>
-                <Link
-                  to="/Contact"
-                  className="text-[#2B3B3A] hover:text-[#1a2a29] font-medium text-lg"
-                >
-                  Contact
-                </Link>
-              </>
-            )}
-
-            {/* Conditionally render Login or Profile and Logout buttons */}
-            {!authData ? (
-              <Link
-                to="/Login"
-                className="bg-[#2B3B3A] text-[#DECEB0] px-5 py-2 rounded hover:bg-[#1a2a29] transition-colors duration-300 font-medium text-lg"
-              >
-                Login
-              </Link>
-            ) : (
-              <>
-                <Link
-                  to="/Profile"
-                  className="text-[#2B3B3A] font-medium text-lg"
-                >
-                  Profile
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="bg-[#2B3B3A] text-[#DECEB0] px-5 py-2 rounded hover:bg-[#1a2a29] transition-colors duration-300 font-medium text-lg"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Fancy hamburger animation */}
           <div className="md:hidden flex items-center">
             <button
               type="button"
-              className="text-[#2B3B3A] focus:outline-none"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              className="p-2 rounded-full bg-[#2B3B3A]/10 text-[#2B3B3A] focus:outline-none"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              <span className="sr-only">Open main menu</span>
               <div className="relative w-6 h-5">
                 <span
                   className={`absolute h-0.5 w-6 bg-[#2B3B3A] transform transition duration-300 ease-in-out ${
@@ -304,80 +345,138 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 md:hidden z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu - Slide-in drawer style */}
       <div
-        className={`md:hidden absolute top-full left-0 w-full bg-[#DECEB0] shadow-lg transform transition-transform duration-300 origin-top ${
-          mobileMenuOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
+        className={`fixed md:hidden top-[${
+          scrolled ? "64px" : "80px"
+        }] right-0 h-[calc(100vh-80px)] w-4/5 max-w-sm bg-[#DECEB0] shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="px-4 pt-2 pb-4 space-y-4">
-          {authData && (
-            <>
-              {authData.role === "lawyer" && (
-                <Link
-                  to="/lawyer-dashboard"
-                  className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
+        {/* Mobile menu content */}
+        <div className="h-full overflow-y-auto flex flex-col pt-6 pb-20">
+          <div className="px-6 space-y-4 flex-1">
+            {/* User profile summary if logged in */}
+            {authData && (
+              <div className="mb-6 bg-[#2B3B3A]/10 rounded-xl p-4">
+                <div className="flex items-center mb-3">
+                  <div className="bg-[#2B3B3A] text-[#DECEB0] rounded-full p-3 mr-3">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="block text-sm font-medium text-[#2B3B3A]">
+                      Logged in as
+                    </span>
+                    <span className="block text-lg font-bold text-[#2B3B3A]">
+                      {authData.role}
+                    </span>
+                  </div>
+                </div>
+                {authData.role !== "lawyer" && (
+                  <Link
+                    to="/Profile"
+                    className="flex items-center justify-center w-full bg-[#2B3B3A]/20 rounded-lg py-2 text-[#2B3B3A] hover:bg-[#2B3B3A]/30"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    View Profile
+                  </Link>
+                )}
+              </div>
+            )}
+
+            {/* Navigation Links */}
+            <div className="space-y-1">
+              {navLinks.map((link) => {
+                // Only show links that are for everyone or match the user's role
+                if (
+                  link.showFor.includes("all") ||
+                  (authData && link.showFor.includes(authData.role))
+                ) {
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className="flex items-center py-3 px-4 rounded-lg text-[#2B3B3A] font-medium hover:bg-[#2B3B3A]/10 transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                }
+                return null;
+              })}
+            </div>
+          </div>
+
+          {/* Fixed bottom auth controls */}
+          <div className="mt-auto border-t border-[#2B3B3A]/10 px-6 py-4">
+            {!authData ? (
+              <Link
+                to="/Login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center w-full bg-[#2B3B3A] text-[#DECEB0] py-3 px-6 rounded-lg font-medium hover:bg-[#1a2a29] transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  Lawyer Dashboard
-                </Link>
-              )}
-              {authData.role === "admin" && (
-                <Link
-                  to="/admin-dashboard"
-                  className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-                >
-                  Admin Dashboard
-                </Link>
-              )}
-              <Link
-                to="/Booking"
-                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-              >
-                Book Session
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Login
               </Link>
-              <Link
-                to="#blogs"
-                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-              >
-                Blogs
-              </Link>
-              <Link
-                to="/about"
-                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-              >
-                About
-              </Link>
-              <Link
-                to="/Contact"
-                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-              >
-                Contact
-              </Link>
-            </>
-          )}
-          {!authData ? (
-            <Link
-              to="/Login"
-              className="block py-2 px-3 bg-[#2B3B3A] text-[#DECEB0] font-medium text-lg rounded-md hover:bg-[#1a2a29] transition-colors"
-            >
-              Login
-            </Link>
-          ) : (
-            <>
-              <Link
-                to="/Profile"
-                className="block py-2 text-[#2B3B3A] font-medium text-lg hover:bg-[#d0c09f] px-3 rounded-md transition-colors"
-              >
-                Profile
-              </Link>
+            ) : (
               <button
-                onClick={handleLogout}
-                className="block w-full text-left py-2 px-3 bg-[#2B3B3A] text-[#DECEB0] font-medium text-lg rounded-md hover:bg-[#1a2a29] transition-colors"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="flex items-center justify-center w-full bg-[#2B3B3A] text-[#DECEB0] py-3 px-6 rounded-lg font-medium hover:bg-[#1a2a29] transition-colors"
               >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
                 Logout
               </button>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </nav>

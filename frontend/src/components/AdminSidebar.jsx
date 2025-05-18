@@ -138,55 +138,17 @@ const LegalAidLogo = ({
 
 const AdminSidebar = () => {
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { logout } = useAuth();
   const navigate = useNavigate();
-
-  // Close sidebar when clicking outside on mobile
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const sidebar = document.getElementById("sidebar");
-      const hamburgerBtn = document.getElementById("hamburger-btn");
-
-      if (
-        sidebar &&
-        hamburgerBtn &&
-        !sidebar.contains(event.target) &&
-        !hamburgerBtn.contains(event.target) &&
-        isMobileMenuOpen
-      ) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMobileMenuOpen]);
-
-  // Close sidebar when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
+  const { authData, logout } = useAuth();
+  const [isOpen, setIsOpen] = useState(true);
 
   const menuItems = [
     {
       title: "Dashboard",
       path: "/admin-dashboard",
       icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       ),
     },
@@ -194,18 +156,8 @@ const AdminSidebar = () => {
       title: "Lawyer Applications",
       path: "/admin-dashboard/applications",
       icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
     },
@@ -213,18 +165,8 @@ const AdminSidebar = () => {
       title: "User Management",
       path: "/admin-dashboard/users",
       icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-          />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
       ),
     },
@@ -232,111 +174,137 @@ const AdminSidebar = () => {
       title: "Add Blog",
       path: "/admin-dashboard/add-blog",
       icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-          />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
       ),
     },
   ];
 
-  // Hamburger menu icon that animates to X when open
-  const HamburgerIcon = ({ isOpen }) => (
-    <div className="relative w-6 h-6">
-      <span
-        className={`absolute h-0.5 w-6 bg-white transform transition-all duration-300 ease-in-out ${
-          isOpen ? "rotate-45 top-3" : "top-1"
-        }`}
-      ></span>
-      <span
-        className={`absolute h-0.5 w-6 bg-white transform transition-all duration-300 ease-in-out top-3 ${
-          isOpen ? "opacity-0" : "opacity-100"
-        }`}
-      ></span>
-      <span
-        className={`absolute h-0.5 w-6 bg-white transform transition-all duration-300 ease-in-out ${
-          isOpen ? "-rotate-45 top-3" : "top-5"
-        }`}
-      ></span>
-    </div>
-  );
+  // Toggle sidebar function
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <>
-      {/* Hamburger Menu Button - Fixed position */}
+    <div className="min-h-screen bg-[#f5f5fa] flex items-center justify-center px-4 py-12 relative">
+      {/* Toggle Button - Always visible */}
       <button
-        id="hamburger-btn"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-[#2B3B3A] text-white hover:bg-[#1a2a29] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#DECEB0]"
-        aria-label="Toggle navigation menu"
+        onClick={toggleSidebar}
+        className={`fixed z-20 top-4 ${isOpen ? "left-56" : "left-4"} bg-[#4A5B5A] text-[#E8D8B0] p-2 rounded-lg shadow-lg transition-all duration-300`}
+        aria-label="Toggle Sidebar"
       >
-        <HamburgerIcon isOpen={isMobileMenuOpen} />
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {isOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          )}
+        </svg>
       </button>
 
-      {/* Sidebar */}
+      {/* Main Sidebar */}
       <div
-        id="sidebar"
-        className={`fixed top-0 left-0 h-screen w-64 bg-[#2B3B3A] text-white transform transition-transform duration-300 ease-in-out z-40
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        className={`fixed top-0 left-0 h-screen bg-[#3A4B4A] text-white shadow-xl transition-all duration-300 ease-in-out ${isOpen ? "w-64" : "w-16"} z-10`}
       >
         {/* Logo and Brand */}
-        <div className="flex items-center justify-center h-20 border-b border-[#3a4b4a]">
-          <div className="flex items-center space-x-3">
-            <LegalAidLogo size="normal" />
-            <span className="text-xl font-bold text-[#DECEB0]">LegalAid</span>
+        <div className="flex items-center justify-center h-16 border-b border-[#4A5B5A]">
+          <div className={`flex items-center ${isOpen ? "space-x-3" : "justify-center"}`}>
+            <LegalAidLogo size={isOpen ? "normal" : "small"} />
+            {isOpen && (
+              <span className="text-xl font-bold text-[#E8D8B0]">LegalAid</span>
+            )}
+          </div>
+        </div>
+
+        {/* User Profile Section */}
+        <div className={`px-4 py-3 border-b border-[#4A5B5A] ${isOpen ? "" : "flex justify-center"}`}>
+          <div className={`flex items-center ${isOpen ? "space-x-3" : "justify-center"}`}>
+            <div className="w-8 h-8 rounded-full bg-[#E8D8B0] flex items-center justify-center text-[#3A4B4A] font-bold">
+              AD
+            </div>
+            {isOpen && (
+              <div>
+                <h3 className="font-medium text-sm text-[#E8D8B0]">{authData?.name || "Admin"}</h3>
+                <p className="text-xs text-gray-300">Administrator</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="mt-6 flex flex-col h-[calc(100vh-5rem)]">
-          <div className="flex-1">
-            {menuItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center px-6 py-3 text-sm font-medium transition-colors duration-200 ${
-                  location.pathname === item.path
-                    ? "bg-[#1a2a29] text-[#DECEB0] border-l-4 border-[#DECEB0]"
-                    : "text-gray-300 hover:bg-[#1a2a29] hover:text-[#DECEB0]"
-                }`}
-              >
-                <span className="mr-3">{item.icon}</span>
-                {item.title}
-              </Link>
-            ))}
-          </div>
-          {/* Logout Button at the bottom */}
+        <nav className="mt-4 px-2">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center px-3 py-3 mb-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                location.pathname === item.path
+                  ? "bg-[#4A5B5A] text-[#E8D8B0]"
+                  : "text-gray-300 hover:bg-[#4A5B5A] hover:text-[#E8D8B0]"
+              } ${isOpen ? "" : "justify-center"}`}
+            >
+              <span className={isOpen ? "mr-3" : ""}>{item.icon}</span>
+              {isOpen && item.title}
+              {!isOpen && (
+                <span className="absolute left-16 bg-[#4A5B5A] text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  {item.title}
+                </span>
+              )}
+            </Link>
+          ))}
+
+          {/* Home Button */}
           <button
-            onClick={() => { logout(); navigate('/login'); }}
-            className="w-full flex items-center justify-center px-6 py-3 text-sm font-medium text-red-500 hover:text-white hover:bg-red-600 transition-colors duration-200 border-t border-[#3a4b4a]"
+            onClick={() => navigate("/")}
+            className={`w-full flex items-center px-3 py-3 mb-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-[#4A5B5A] hover:text-[#E8D8B0] transition-all duration-200 ${
+              isOpen ? "" : "justify-center"
+            }`}
           >
-            Logout
+            <span className={isOpen ? "mr-3" : ""}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </span>
+            {isOpen && "Home"}
           </button>
         </nav>
-      </div>
 
-      {/* Semi-transparent overlay for mobile - only when sidebar is open */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden transition-opacity duration-300"
-          aria-hidden="true"
-        />
-      )}
+        {/* Bottom Section with Settings & Logout */}
+        {isOpen && (
+          <div className="absolute bottom-0 left-0 right-0 border-t border-[#4A5B5A] p-4">
+            <div className="flex justify-between">
+              <button className="text-gray-300 hover:text-[#E8D8B0] transition-colors duration-200">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              <button onClick={() => { logout(); navigate('/login'); }} className="text-gray-300 hover:text-[#E8D8B0] transition-colors duration-200">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
 
-      {/* Content margin adjustment for desktop */}
-      <div className="md:ml-64 transition-all duration-300">
-        {/* Your page content goes here */}
+        {/* Collapsed Bottom Section */}
+        {!isOpen && (
+          <div className="absolute bottom-0 left-0 right-0 border-t border-[#4A5B5A] py-4 flex flex-col items-center space-y-4">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <button onClick={() => { logout(); navigate('/login'); }} className="text-gray-300 hover:text-[#E8D8B0] transition-colors duration-200">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

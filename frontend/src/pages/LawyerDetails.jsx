@@ -5,6 +5,7 @@ import StyledCheckbox from "../components/StyledCheckbox";
 import StyledButton from "../components/StyledButton";
 import ReviewComponent from "../components/ReviewComponent";
 import BookingForm from '../components/BookingForm';
+import { useAuth } from "../context/AuthContext";
 
 // Import the LegalAidLogo component from wherever you've defined it
 // Alternatively, I'll include a simplified version here:
@@ -164,8 +165,8 @@ const LawyerDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { lawyer } = location.state || {};
+  const { authData } = useAuth();
   const [selectedRate, setSelectedRate] = useState("hourly");
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const [showBookingForm, setShowBookingForm] = useState(false);
 
   if (!lawyer) {
@@ -174,25 +175,24 @@ const LawyerDetails = () => {
   }
 
   const handleBook = () => {
-    if (!user) {
-    Swal.fire({
+    if (!authData) {
+      Swal.fire({
         title: "Login Required",
         text: "Please login to book a consultation",
         icon: "info",
-      showCancelButton: true,
+        showCancelButton: true,
         confirmButtonText: "Login",
-      cancelButtonText: "Cancel",
-          confirmButtonColor: "#2B3B3A",
-          background: "#FFFFFF",
-          iconColor: "#DECEB0",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#2B3B3A",
+        background: "#FFFFFF",
+        iconColor: "#DECEB0",
       }).then((result) => {
         if (result.isConfirmed) {
           navigate("/login");
-      }
-    });
+        }
+      });
       return;
     }
-
     setShowBookingForm(true);
   };
 
@@ -317,62 +317,6 @@ const LawyerDetails = () => {
                       <span className="font-semibold">Specialization:</span>{" "}
                       {lawyer.specialization}
                     </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Consultation Rates Card */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-              <div className="bg-[#2B3B3A] px-6 py-4">
-                <h2 className="text-xl font-bold text-[#DECEB0]">
-                  Select Consultation Duration
-                </h2>
-              </div>
-              <div className="p-6">
-                <div className="space-y-6">
-                  <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:border-[#2B3B3A] transition-colors cursor-pointer bg-white"
-                       onClick={() => setSelectedRate("hourly")}>
-                    <div className="mr-4">
-                      <StyledCheckbox
-                        id="hourly-rate"
-                        checked={selectedRate === "hourly"}
-                        onChange={() => setSelectedRate("hourly")}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-[#2B3B3A]">
-                        1 Hour Consultation
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Full in-depth legal consultation session
-                      </p>
-                    </div>
-                    <div className="text-2xl font-bold text-[#2B3B3A]">
-                      ${lawyer.hourlyRate}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center p-4 border border-gray-200 rounded-lg hover:border-[#2B3B3A] transition-colors cursor-pointer bg-white"
-                       onClick={() => setSelectedRate("halfHourly")}>
-                    <div className="mr-4">
-                      <StyledCheckbox
-                        id="half-hourly-rate"
-                        checked={selectedRate === "halfHourly"}
-                        onChange={() => setSelectedRate("halfHourly")}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-[#2B3B3A]">
-                        30 Minutes Consultation
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        Quick legal consultation session
-                      </p>
-                    </div>
-                    <div className="text-2xl font-bold text-[#2B3B3A]">
-                      ${lawyer.halfHourlyRate}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -579,7 +523,7 @@ const LawyerDetails = () => {
             </div>
 
             {/* Testimonials Section */}
-            <ReviewComponent lawyerId={lawyer.userId._id} userId={user?._id} />
+            <ReviewComponent lawyerId={lawyer.userId._id} userId={authData?._id} />
           </div>
         </div>
       </div>

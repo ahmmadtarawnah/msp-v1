@@ -42,38 +42,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a2a29] via-[#2B3B3A] to-[#3C4C4B] flex items-center justify-center px-4 py-12 relative">
-      {/* Updated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Animated circles */}
-        <div className="absolute w-96 h-96 rounded-full bg-[#DECEB0] opacity-5 blur-3xl top-0 right-0 -mr-20 -mt-20"></div>
-        <div className="absolute w-64 h-64 rounded-full bg-[#DECEB0] opacity-5 blur-2xl bottom-40 left-20"></div>
-        <div className="absolute w-80 h-80 rounded-full bg-[#DECEB0] opacity-3 blur-3xl bottom-0 right-40"></div>
-
-        {/* Diagonal lines */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `repeating-linear-gradient(45deg, rgba(222, 206, 176, 0.03) 0px, rgba(222, 206, 176, 0.03) 1px, transparent 1px, transparent 10px)`,
-            backgroundSize: "30px 30px",
-          }}
-        ></div>
-
-        {/* Horizontal flowing lines */}
-        <div
-          className="absolute bottom-20 left-0 right-0 h-40"
-          style={{
-            backgroundImage: `
-                 linear-gradient(90deg, transparent 0%, rgba(222, 206, 176, 0.07) 20%, rgba(222, 206, 176, 0.03) 80%, transparent 100%),
-                 linear-gradient(90deg, transparent 10%, rgba(222, 206, 176, 0.05) 30%, rgba(222, 206, 176, 0.02) 70%, transparent 90%)
-               `,
-            backgroundSize: "100% 15px, 100% 10px",
-            backgroundPosition: "0 0, 0 20px",
-            backgroundRepeat: "no-repeat",
-          }}
-        ></div>
-      </div>
-
+    <div className="min-h-screen bg-[#f5f5fa] flex items-center justify-center px-4 py-12 relative">
       <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex relative z-10">
         {/* Left Side - Contact Information */}
         <div className="w-1/2 bg-[#2B3B3A] text-white p-12 relative overflow-hidden">

@@ -12,7 +12,6 @@ const BookingForm = ({ lawyer, selectedRate, onClose }) => {
     date: '',
     time: '',
     duration: selectedRate === 'hourly' ? 60 : 30,
-    notes: '',
     cardNumber: '',
     cardName: '',
     expiryDate: '',
@@ -58,8 +57,7 @@ const BookingForm = ({ lawyer, selectedRate, onClose }) => {
           lawyerId: lawyer.userId._id,
           date: formData.date,
           time: formData.time,
-          duration: formData.duration,
-          notes: formData.notes
+          duration: formData.duration
         },
         {
           headers: {
@@ -94,11 +92,13 @@ const BookingForm = ({ lawyer, selectedRate, onClose }) => {
   };
 
   const calculateTotal = () => {
-    return formData.duration === 60 ? lawyer.hourlyRate : lawyer.halfHourlyRate;
+    const baseAmount = formData.duration === 60 ? lawyer.hourlyRate : lawyer.halfHourlyRate;
+    const tax = baseAmount * 0.05; // 5% tax
+    return (baseAmount + tax).toFixed(2);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-[#2B3B3A]">Book a Consultation</h2>
@@ -175,34 +175,28 @@ const BookingForm = ({ lawyer, selectedRate, onClose }) => {
             />
           </div>
 
-          {/* Notes */}
-          <div>
-            <label htmlFor="notes" className="block text-[#2B3B3A] font-medium mb-2">
-              Additional Notes (Optional)
-            </label>
-            <textarea
-              id="notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2B3B3A] focus:border-transparent"
-              placeholder="Any specific topics or concerns you'd like to discuss..."
-            />
-          </div>
-
           {/* Total and Submit */}
           <div className="border-t border-gray-200 pt-4">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-[#2B3B3A] font-medium">Total Amount:</span>
-              <span className="text-xl font-bold text-[#2B3B3A]">${calculateTotal()}</span>
+            <div className="space-y-2 mb-4">
+              <div className="flex justify-between items-center">
+                <span className="text-[#2B3B3A]">Base Amount:</span>
+                <span className="text-[#2B3B3A]">${formData.duration === 60 ? lawyer.hourlyRate : lawyer.halfHourlyRate}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[#2B3B3A]">Tax (5%):</span>
+                <span className="text-[#2B3B3A]">${((formData.duration === 60 ? lawyer.hourlyRate : lawyer.halfHourlyRate) * 0.05).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                <span className="text-[#2B3B3A] font-medium">Total Amount:</span>
+                <span className="text-xl font-bold text-[#2B3B3A]">${calculateTotal()}</span>
+              </div>
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#2B3B3A] text-white py-3 rounded-lg font-medium hover:bg-[#1a2a29] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2B3B3A] text-white py-3 rounded-lg hover:bg-[#1A2A29] transition-colors disabled:opacity-50"
             >
-              {loading ? 'Processing...' : 'Request Consultation'}
+              {loading ? 'Processing...' : 'Book Consultation'}
             </button>
           </div>
         </form>

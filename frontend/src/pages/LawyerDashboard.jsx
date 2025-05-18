@@ -16,6 +16,7 @@ const LawyerDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [showEnlargedImage, setShowEnlargedImage] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!authData || authData.role !== "lawyer") {
@@ -143,8 +144,49 @@ const LawyerDashboard = () => {
   return (
     <div className="min-h-screen bg-[#F5F0E6]">
       <div className="flex">
-        <LawyerSidebar />
-        <div className="ml-64 flex-1 p-6">
+        {/* Sidebar: hidden on mobile, visible on md+ */}
+        <div className="hidden md:block">
+          <LawyerSidebar />
+        </div>
+        {/* Mobile sidebar toggle button */}
+        <div className="md:hidden fixed top-4 left-4 z-50">
+          <button
+            onClick={() => setMobileSidebarOpen(true)}
+            className="p-2 rounded bg-[#3A4B4A] text-[#E8D8B0] shadow-lg focus:outline-none"
+            aria-label="Open sidebar"
+          >
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+        {/* Mobile Sidebar Overlay */}
+        {mobileSidebarOpen && (
+          <div className="fixed inset-0 z-50 flex">
+            {/* Overlay background */}
+            <div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setMobileSidebarOpen(false)}
+            />
+            {/* Sidebar drawer */}
+            <div className="relative w-64 max-w-full h-full bg-[#3A4B4A] shadow-xl z-50 animate-slideInLeft">
+              <button
+                onClick={() => setMobileSidebarOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-[#E8D8B0] text-[#3A4B4A] focus:outline-none"
+                aria-label="Close sidebar"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="h-full overflow-y-auto pt-12">
+                <LawyerSidebar />
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Main content: full width on mobile, margin on md+ */}
+        <div className="flex-1 w-full md:ml-64 p-2 sm:p-4 md:p-6">
           <Routes>
             <Route path="/" element={<Outlet />} />
             <Route path="reviews" element={<LawyerReviews />} />
@@ -152,8 +194,8 @@ const LawyerDashboard = () => {
           {!location.pathname.includes('/reviews') && (
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               {/* Header Section */}
-              <div className="bg-[#3A4B4A] p-6 text-white">
-                <div className="flex items-center space-x-4">
+              <div className="bg-[#3A4B4A] p-4 sm:p-6 text-white">
+                <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-4 sm:space-y-0">
                   <div className="relative group">
                     <div 
                       className="relative h-20 w-20 rounded-full overflow-hidden cursor-pointer"
@@ -183,7 +225,7 @@ const LawyerDashboard = () => {
                       onChange={handleImageChange}
                     />
                   </div>
-                  <div>
+                  <div className="text-center sm:text-left">
                     <h1 className="text-2xl font-bold">{authData.name}</h1>
                     <p className="text-[#E8D8B0]">Bar Number: {lawyerData.barNumber}</p>
                   </div>
@@ -191,7 +233,7 @@ const LawyerDashboard = () => {
               </div>
 
               {/* Main Content */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left Column */}
                   <div className="space-y-6">
@@ -259,7 +301,7 @@ const LawyerDashboard = () => {
       {/* Options Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-full mx-2">
             <h2 className="text-xl font-bold text-[#3A4B4A] mb-4">Profile Picture Options</h2>
             <div className="space-y-4">
               <button

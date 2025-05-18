@@ -7,6 +7,9 @@ import AdminSidebar from "../components/AdminSidebar";
 import LawyerApplications from "../components/LawyerApplications";
 import AddBlog from "../components/AddBlog";
 import UserManagement from "../components/UserManagement";
+import { Pie, Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 const AdminDashboard = () => {
   const { authData, logout } = useAuth();
@@ -19,6 +22,7 @@ const AdminDashboard = () => {
     totalLawyers: 0,
     totalAdmins: 0,
   });
+  const [totalPayments, setTotalPayments] = useState(0);
 
   useEffect(() => {
     if (!authData || authData.role !== "admin") {
@@ -26,6 +30,7 @@ const AdminDashboard = () => {
       return;
     }
     fetchUsers();
+    fetchPayments();
   }, [authData, navigate]);
 
   const fetchUsers = async () => {
@@ -46,6 +51,19 @@ const AdminDashboard = () => {
         title: "Error",
         text: "Failed to fetch users data. Please make sure you are logged in as an admin.",
       });
+    }
+  };
+
+  const fetchPayments = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/payments", {
+        headers: { Authorization: `Bearer ${authData.token}` },
+      });
+      const payments = response.data;
+      const total = payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
+      setTotalPayments(total);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
     }
   };
 
@@ -159,6 +177,84 @@ const AdminDashboard = () => {
               path="/"
               element={
                 <>
+                  {/* Statistics Charts */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* User Role Distribution Pie Chart */}
+                    <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 flex flex-col items-center">
+                      <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">User Role Distribution</h3>
+                      <Pie
+                        data={{
+                          labels: ['Users', 'Lawyers', 'Admins'],
+                          datasets: [
+                            {
+                              data: [
+                                stats.totalUsers - stats.totalLawyers - stats.totalAdmins,
+                                stats.totalLawyers,
+                                stats.totalAdmins,
+                              ],
+                              backgroundColor: [
+                                '#60A5FA', // blue
+                                '#34D399', // green
+                                '#A78BFA', // purple
+                              ],
+                              borderColor: '#fff',
+                              borderWidth: 2,
+                            },
+                          ],
+                        }}
+                        options={{
+                          plugins: {
+                            legend: {
+                              display: true,
+                              position: 'bottom',
+                              labels: { color: '#2B3B3A', font: { size: 14 } },
+                            },
+                          },
+                        }}
+                        className="max-w-xs mx-auto"
+                      />
+                    </div>
+                    {/* Payment Chart */}
+                    <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 flex flex-col items-center">
+                      <h3 className="text-lg font-semibold text-[#2B3B3A] mb-4">Payment Overview</h3>
+                      <Bar
+                        data={{
+                          labels: ['Total Payments'],
+                          datasets: [
+                            {
+                              label: 'Amount ($)',
+                              data: [totalPayments],
+                              backgroundColor: '#FBBF24',
+                              borderRadius: 8,
+                            },
+                          ],
+                        }}
+                        options={{
+                          plugins: {
+                            legend: { display: false },
+                          },
+                          scales: {
+                            y: {
+                              beginAtZero: true,
+                              ticks: { 
+                                color: '#2B3B3A', 
+                                font: { size: 14 },
+                                callback: function(value) {
+                                  return '$' + value;
+                                }
+                              },
+                              grid: { color: '#F3F4F6' },
+                            },
+                            x: {
+                              ticks: { color: '#2B3B3A', font: { size: 14 } },
+                              grid: { display: false },
+                            },
+                          },
+                        }}
+                        className="w-full max-w-xs mx-auto"
+                      />
+                    </div>
+                  </div>
                   {/* Statistics Cards */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     <div className="bg-white rounded-xl p-5 sm:p-6 shadow-md border border-gray-100 transition-transform hover:translate-y-[-2px]">
@@ -241,128 +337,21 @@ const AdminDashboard = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Users Table */}
-                  <div className="bg-white rounded-xl p-5 sm:p-6 shadow-md border border-gray-100">
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-                        User Management
-                      </h2>
-                    </div>
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">
-                              Name
-                            </th>
-                            <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">
-                              Username
-                            </th>
-                            <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">
-                              Role
-                            </th>
-                            <th className="px-4 sm:px-6 py-3 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {users.map((user) => (
-                            <tr
-                              key={user._id}
-                              className="hover:bg-gray-50 transition-colors duration-150"
-                            >
-                              <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base font-medium text-gray-900">
-                                {user.name}
-                              </td>
-                              <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm sm:text-base text-gray-700">
-                                {user.username}
-                              </td>
-                              <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                                {user.role === "lawyer" ? (
-                                  <span className="px-2 inline-flex text-xs sm:text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    Lawyer
-                                  </span>
-                                ) : (
-                                  <div className="relative inline-block">
-                                    <select
-                                      value={user.role}
-                                      onChange={(e) =>
-                                        handleUpdateRole(
-                                          user._id,
-                                          e.target.value
-                                        )
-                                      }
-                                      className="appearance-none bg-gray-50 text-gray-700 border border-gray-300 rounded-md py-1 px-3 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-[#2B3B3A] focus:border-[#2B3B3A] text-sm"
-                                    >
-                                      <option value="user">User</option>
-                                      <option value="admin">Admin</option>
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                      <svg
-                                        className="h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                          clipRule="evenodd"
-                                        />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                )}
-                              </td>
-                              <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button
-                                  onClick={() => handleDeleteUser(user._id)}
-                                  className="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4 mr-1"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                    />
-                                  </svg>
-                                  Delete
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-
-                      {users.length === 0 && (
-                        <div className="text-center py-8">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-12 w-12 mx-auto text-gray-300"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1}
-                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                            />
+                    <div className="bg-white rounded-xl p-5 sm:p-6 shadow-md border border-gray-100 transition-transform hover:translate-y-[-2px]">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-600 mb-2">
+                        Total Payments
+                      </h3>
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 10c-4.41 0-8-1.79-8-4V6c0-2.21 3.59-4 8-4s8 1.79 8 4v8c0 2.21-3.59 4-8 4z" />
                           </svg>
-                          <p className="mt-2 text-gray-500">No users found</p>
                         </div>
-                      )}
+                        <p className="text-2xl sm:text-3xl font-bold text-[#2B3B3A]">
+                          ${totalPayments.toLocaleString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </>

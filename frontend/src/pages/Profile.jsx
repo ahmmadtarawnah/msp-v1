@@ -169,6 +169,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [appointments, setAppointments] = useState([]);
+  const [displayedAppointments, setDisplayedAppointments] = useState(5);
   const navigate = useNavigate();
 
   const fetchAppointments = async () => {
@@ -292,9 +293,11 @@ const Profile = () => {
     try {
       // Find the appointment to get the rate
       const appointment = appointments.find(apt => apt._id === appointmentId);
-      const amount = appointment.duration === 60 
+      const baseAmount = appointment.duration === 60 
         ? appointment.lawyerId.application.hourlyRate 
         : appointment.lawyerId.application.halfHourlyRate;
+      const tax = baseAmount * 0.05; // 5% tax
+      const totalAmount = baseAmount + tax;
 
       // Show payment form
       const { value: formValues } = await Swal.fire({
@@ -302,19 +305,25 @@ const Profile = () => {
         html: `
           <div class="space-y-6 p-4">
             <div class="bg-[#2B3B3A]/5 p-4 rounded-lg">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-gray-600">Total Amount</span>
-                <span class="text-2xl font-bold text-[#2B3B3A]">$${amount.toFixed(2)}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm text-gray-500">
-                <span>Consultation Fee (${appointment.duration} minutes)</span>
-                <span>$${amount.toFixed(2)}</span>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-600">Base Amount</span>
+                  <span class="text-[#2B3B3A]">$${baseAmount.toFixed(2)}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-600">Tax (5%)</span>
+                  <span class="text-[#2B3B3A]">$${tax.toFixed(2)}</span>
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-gray-200">
+                  <span class="text-gray-600 font-medium">Total Amount</span>
+                  <span class="text-2xl font-bold text-[#2B3B3A]">$${totalAmount.toFixed(2)}</span>
+                </div>
               </div>
             </div>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
                 <div class="relative">
                   <input id="cardNumber" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="1234 5678 9012 3456" maxlength="19">
                   <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -323,20 +332,20 @@ const Profile = () => {
                     </svg>
                   </div>
                 </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
-                <input id="cardName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="John Doe">
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                  <input id="expiryDate" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="MM/YY" maxlength="5">
               </div>
+
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
+                <input id="cardName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="John Doe">
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
+                  <input id="expiryDate" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
                   <div class="relative">
                     <input id="cvv" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="123" maxlength="3">
                     <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -347,13 +356,13 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="flex items-center space-x-2 text-sm text-gray-500">
-              <svg class="w-5 h-5 text-[#DECEB0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span>Your payment information is secure and encrypted</span>
+              <div class="flex items-center space-x-2 text-sm text-gray-500">
+                <svg class="w-5 h-5 text-[#DECEB0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>Your payment information is secure and encrypted</span>
+              </div>
             </div>
           </div>
         `,
@@ -383,7 +392,8 @@ const Profile = () => {
           {
             appointmentId,
             paymentMethod: 'card',
-            cardDetails: formValues
+            cardDetails: formValues,
+            amount: totalAmount
           },
           {
             headers: {
@@ -753,7 +763,7 @@ const Profile = () => {
               <h2 className="text-2xl font-bold text-[#2B3B3A] mb-6">Your Appointments</h2>
               {appointments.length > 0 ? (
                 <div className="space-y-4">
-                  {appointments.map((appointment) => (
+                  {appointments.slice(0, displayedAppointments).map((appointment) => (
                     <div key={appointment._id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
@@ -809,6 +819,17 @@ const Profile = () => {
                       </div>
                     </div>
                   ))}
+                  {/* Load More Appointments Button */}
+                  {displayedAppointments < appointments.length && (
+                    <div className="flex justify-center mt-4">
+                      <button
+                        className="bg-[#2B3B3A] text-[#DECEB0] px-6 py-2 rounded-md font-medium hover:bg-[#1a2a29] transition-colors duration-300"
+                        onClick={() => setDisplayedAppointments(prev => prev + 5)}
+                      >
+                        Load More Appointments
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="text-gray-600">No appointments found.</p>

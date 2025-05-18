@@ -200,15 +200,14 @@ const LoadingSkeleton = () => (
 
 // Main Review Component
 const ReviewComponent = ({ lawyerId }) => {
-  const navigate = useNavigate();
   const { authData } = useAuth();
+  const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
-  const [averageRating, setAverageRating] = useState(0);
-  const [totalReviews, setTotalReviews] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isAuthenticated = !!authData?.token;
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [displayedReviews, setDisplayedReviews] = useState(5);
 
   useEffect(() => {
     fetchReviews();
@@ -281,70 +280,62 @@ const ReviewComponent = ({ lawyerId }) => {
 
   const navigateToLogin = () => navigate("/login");
 
+  const loadMoreReviews = () => {
+    setDisplayedReviews(prev => prev + 5);
+  };
+
   if (isLoading) {
     return <LoadingSkeleton />;
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-      {/* Header Section with Teal Background */}
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       <div className="bg-[#2B3B3A] px-6 py-4">
         <h2 className="text-xl font-bold text-[#DECEB0]">Client Reviews</h2>
       </div>
-
-      {/* Content Section */}
       <div className="p-6">
-        {/* Review Summary Section */}
-        <div className="mb-6 border-b border-gray-200 pb-4">
-          <div className="flex items-center mb-4">
-            <StarRating rating={averageRating} size="text-2xl" />
-            <span className="ml-3 text-lg text-[#2B3B3A]">
-              <span className="font-medium">
-                {averageRating?.toFixed(1) || "0.0"}
-              </span>
-              <span className="mx-1">•</span>
-              <span>
-                {totalReviews || 0} {totalReviews === 1 ? "review" : "reviews"}
-              </span>
-            </span>
+        {/* Rating Summary */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="text-4xl font-bold text-[#2B3B3A] mr-4">
+                {averageRating.toFixed(1)}
+              </div>
+              <div>
+                <StarRating rating={averageRating} size="text-2xl" />
+                <div className="text-sm text-gray-600 mt-1">
+                  {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Review Form Section */}
+        {/* Review Form */}
         <ReviewForm
           onSubmitReview={handleSubmitReview}
-          isAuthenticated={isAuthenticated}
+          isAuthenticated={!!authData}
           navigateToLogin={navigateToLogin}
         />
 
-        {/* Review List Section */}
+        {/* Reviews List */}
         <div className="space-y-4">
-          {isSubmitting && (
-            <div className="text-center py-4">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#DECEB0]"></div>
-              <p className="mt-2 text-gray-600">Submitting your review...</p>
-            </div>
-          )}
-
-          {reviews.length > 0 ? (
-            <>
-              <h3 className="text-lg font-semibold mb-4 text-[#2B3B3A]">
-                Client Feedback
-              </h3>
-              <div className="divide-y divide-gray-100">
-                {reviews.map((review) => (
-                  <ReviewCard key={review._id} review={review} />
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-8 bg-[#F5F3EE] rounded-lg border border-[#DECEB0]">
-              <p className="text-[#2B3B3A]">
-                No reviews yet. Be the first to share your experience!
-              </p>
-            </div>
-          )}
+          {reviews.slice(0, displayedReviews).map((review) => (
+            <ReviewCard key={review._id} review={review} />
+          ))}
         </div>
+
+        {/* Load More Button */}
+        {reviews.length > displayedReviews && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={loadMoreReviews}
+              className="px-6 py-2 bg-[#2B3B3A] text-white rounded-lg hover:bg-[#1a2726] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#DECEB0]"
+            >
+              Load More Reviews
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
