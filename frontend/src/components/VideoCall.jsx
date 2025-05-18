@@ -59,10 +59,6 @@ const VideoCall = () => {
   }, [dragging, dragOffset]);
 
   useEffect(() => {
-    if (!authData || !authData.user || !authData.user._id) {
-      // Optionally redirect to login or show an error
-      return;
-    }
     const fetchAppointment = async () => {
       try {
         const response = await axios.get(
