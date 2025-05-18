@@ -9,7 +9,9 @@ const {
   getAllBlogs,
   getBlogById,
   updateBlog,
-  deleteBlog
+  deleteBlog,
+  createBlogPost,
+  getAllBlogPosts
 } = require("../controllers/blogController");
 
 // Ensure uploads directory exists
@@ -41,15 +43,12 @@ const upload = multer({
 });
 
 // Public routes
-router.get("/", getAllBlogs);
+router.get("/", getAllBlogPosts);
 router.get("/:id", getBlogById);
 
-// Admin routes
-router.use(authenticate);
-router.use(isAdmin);
-
-router.post("/", upload.single("blogPic"), addBlog);
-router.put("/:id", upload.single("blogPic"), updateBlog);
-router.delete("/:id", deleteBlog);
+// Admin routes (protected)
+router.post("/", authenticate, isAdmin, createBlogPost);
+router.put("/:id", authenticate, isAdmin, updateBlog);
+router.delete("/:id", authenticate, isAdmin, deleteBlog);
 
 module.exports = router; 

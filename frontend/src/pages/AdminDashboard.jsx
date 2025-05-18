@@ -7,6 +7,7 @@ import AdminSidebar from "../components/AdminSidebar";
 import LawyerApplications from "../components/LawyerApplications";
 import AddBlog from "../components/AddBlog";
 import UserManagement from "../components/UserManagement";
+import AdminContacts from "../components/AdminContacts";
 import { Pie, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
@@ -359,6 +360,7 @@ const AdminDashboard = () => {
             />
             <Route path="/applications" element={<LawyerApplications />} />
             <Route path="/users" element={<UserManagement />} />
+            <Route path="/contacts" element={<AdminContacts />} />
             <Route path="/add-blog" element={<AddBlog />} />
           </Routes>
         </div>

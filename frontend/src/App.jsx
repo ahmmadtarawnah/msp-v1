@@ -26,6 +26,7 @@ import LawyerAppointments from "./pages/LawyerAppointments";
 import LawyerDetails from "./pages/LawyerDetails";
 import About from "./pages/About";
 import LegalServices from "./pages/LegalServices";
+import Blogs from "./pages/Blogs";
 
 import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 
@@ -83,6 +84,7 @@ const AppRoutes = ({ loading }) => {
           <Route path="/about" element={<About />} />
           <Route path="/legal-services" element={<LegalServices />} />
           <Route path="/video-call/:appointmentId" element={<VideoCall />} />
+          <Route path="/Blogs" element={<Blogs />} />
         </Routes>
       </main>
 

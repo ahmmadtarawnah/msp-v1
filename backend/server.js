@@ -14,6 +14,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const videoRoutes = require("./routes/videoRoutes");
+const blogRoutes = require("./routes/blogRoutes");
 
 const app = express();
 app.use(express.json());
@@ -22,8 +23,14 @@ app.use(express.urlencoded({ extended: true }));
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, "uploads");
+const blogsDir = path.join(uploadsDir, "blogs");
+
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+if (!fs.existsSync(blogsDir)) {
+  fs.mkdirSync(blogsDir, { recursive: true });
 }
 
 // Serve static files from uploads directory
@@ -42,6 +49,16 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/video", videoRoutes);
+app.use("/api/blogs", blogRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
 
 // Start server
 const PORT = process.env.PORT || 5000;
