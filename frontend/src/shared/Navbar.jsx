@@ -184,6 +184,7 @@ const Navbar = () => {
 
   // Navigation links configuration for DRY code
   const navLinks = [
+    { path: "/", label: "Home", showFor: ["all"] },
     { path: "/Booking", label: "Book Session", showFor: ["all"] },
     { path: "/Blogs", label: "Blogs", showFor: ["all"] },
     { path: "/about", label: "About", showFor: ["all"] },
@@ -194,6 +195,7 @@ const Navbar = () => {
       showFor: ["lawyer"],
     },
     { path: "/admin-dashboard", label: "Admin Dashboard", showFor: ["admin"] },
+    { path: "/become-a-lawyer", label: "Become a Lawyer", showFor: ["user"] },
   ];
 
   return (

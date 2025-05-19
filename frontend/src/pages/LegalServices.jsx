@@ -316,64 +316,23 @@ const LegalServices = () => {
       )}
 
       {/* Hero Section */}
-      <div className="relative py-32 overflow-hidden bg-[#2B3B3A]">
-        <div className="absolute inset-0 bg-[url('/pattern.png')] opacity-5"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center">
-            <div className="inline-block mb-8 transform hover:scale-105 transition-transform duration-300">
-              <LegalAidLogo size="large" />
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Expert Legal Services
-              <br />
-              <span className="text-[#DECEB0]">Tailored to Your Needs</span>
+      <div className="relative h-72 bg-[#2B3B3A] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#2B3B3A] to-black opacity-90"></div>
+        <div className="absolute inset-0 flex items-center px-8 lg:px-16">
+          <div className="z-10 max-w-7xl mx-auto w-full">
+            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+              Legal <span className="text-[#DECEB0]">Services</span>
             </h1>
-            <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-12 leading-relaxed">
-              Comprehensive legal solutions from experienced attorneys. 
-              We provide expert guidance through every step of your legal journey, 
-              ensuring your rights are protected and your goals are achieved.
+            <p className="text-gray-200 text-xl max-w-2xl">
+              Comprehensive legal solutions from experienced attorneys. We provide expert guidance through every step of your legal journey.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <Link
-                to="/booking"
-                className="bg-[#DECEB0] hover:bg-white text-[#2B3B3A] font-bold text-lg py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center"
-              >
-                Book a Consultation
-                <svg
-                  className="ml-2 w-5 h-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </Link>
-              <Link
-                to="/contact"
-                className="bg-transparent hover:bg-[#DECEB0] text-white font-semibold text-lg py-4 px-8 rounded-lg border-2 border-[#DECEB0] hover:border-[#DECEB0] hover:text-[#2B3B3A] transition-all duration-300 inline-flex items-center justify-center"
-              >
-                Contact Us
-              </Link>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Services Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-[#2B3B3A] mb-6">
-            Our Legal Services
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            We offer comprehensive legal solutions across various practice areas, 
-            ensuring you receive expert guidance when you need it most.
-          </p>
-        </div>
+        
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {services.map((service, index) => (

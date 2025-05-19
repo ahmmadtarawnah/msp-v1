@@ -132,8 +132,40 @@ const deleteReview = async (req, res) => {
   }
 };
 
+// Get random 5-star reviews
+const getRandomFiveStarReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ rating: 5 })
+      .populate({
+        path: 'userId',
+        select: 'name username',
+        model: 'User'
+      })
+      .populate({
+        path: 'lawyerId',
+        select: 'name specialization',
+        model: 'User'
+      })
+      .sort({ createdAt: -1 });
+
+    // Shuffle the reviews array
+    const shuffledReviews = reviews.sort(() => 0.5 - Math.random());
+    
+    // Get 3 random reviews
+    const randomReviews = shuffledReviews.slice(0, 3);
+
+    res.json({
+      reviews: randomReviews
+    });
+  } catch (error) {
+    console.error('Error fetching random 5-star reviews:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createReview,
   getLawyerReviews,
-  deleteReview
+  deleteReview,
+  getRandomFiveStarReviews
 }; 

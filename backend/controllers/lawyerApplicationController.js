@@ -62,7 +62,7 @@ const submitApplication = async (req, res) => {
 const getAllApplications = async (req, res) => {
   try {
     const applications = await LawyerApplication.find()
-      .populate("userId", "name username")
+      .populate("userId", "name username email")
       .sort({ createdAt: -1 });
     
     res.status(200).json(applications);
@@ -77,7 +77,7 @@ const getApplicationById = async (req, res) => {
   try {
     const { id } = req.params;
     const application = await LawyerApplication.findById(id)
-      .populate("userId", "name username");
+      .populate("userId", "name username email");
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
@@ -131,7 +131,7 @@ const getApplicationByUserId = async (req, res) => {
     }
 
     const application = await LawyerApplication.findOne({ userId })
-      .populate("userId", "name username");
+      .populate("userId", "name username email");
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });
@@ -149,7 +149,7 @@ const getApprovedLawyers = async (req, res) => {
   try {
     console.log("Fetching approved lawyers..."); // Debug log
     const lawyers = await LawyerApplication.find({ status: "approved" })
-      .populate("userId", "name username")
+      .populate("userId", "name username email")
       .select("-certificationPic -createdAt -__v")
       .sort({ yearsOfExperience: -1 });
     

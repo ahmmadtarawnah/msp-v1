@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
+import { useDropzone } from "react-dropzone";
 
 const AddBlog = () => {
   const { authData } = useAuth();
@@ -14,17 +15,29 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const onDrop = useCallback((acceptedFiles) => {
+    const newFiles = acceptedFiles.slice(0, 3 - featuredImages.length);
+    setFeaturedImages((prev) => [...prev, ...newFiles]);
+  }, [featuredImages.length]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif']
+    },
+    maxSize: 5242880, // 5MB
+  });
+
+  const removeImage = (index) => {
+    setFeaturedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  };
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files).slice(0, 3);
-    setFeaturedImages(files);
   };
 
   const handleSubmit = async (e) => {
@@ -47,7 +60,6 @@ const AddBlog = () => {
         formDataToSend.append("featuredImages", image);
       });
 
-      console.log("Sending request with token:", authData.token);
       const response = await axios.post(
         "http://localhost:5000/api/blogs",
         formDataToSend,
@@ -59,12 +71,10 @@ const AddBlog = () => {
         }
       );
 
-      console.log("Response:", response.data);
       setSuccess("Blog post published successfully!");
       setFormData({ title: "", content: "" });
       setFeaturedImages([]);
     } catch (error) {
-      console.error("Error details:", error.response?.data || error.message);
       setError(error.response?.data?.message || "Error publishing blog post");
     } finally {
       setLoading(false);
@@ -72,24 +82,24 @@ const AddBlog = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Add New Blog Post</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">Create New Blog Post</h1>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+          <p className="text-red-700">{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          {success}
+        <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+          <p className="text-green-700">{success}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
             Title
           </label>
           <input
@@ -99,12 +109,13 @@ const AddBlog = () => {
             value={formData.title}
             onChange={handleInputChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            placeholder="Enter your blog title"
           />
         </div>
 
         <div>
-          <label htmlFor="content" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
             Content
           </label>
           <textarea
@@ -114,39 +125,65 @@ const AddBlog = () => {
             onChange={handleInputChange}
             required
             rows="10"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            placeholder="Write your blog content here..."
           />
         </div>
 
         <div>
-          <label htmlFor="featuredImages" className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Featured Images (up to 3)
           </label>
-          <input
-            type="file"
-            id="featuredImages"
-            name="featuredImages"
-            onChange={handleImageChange}
-            accept="image/*"
-            multiple
-            required
-            className="mt-1 block w-full"
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            You can select up to 3 images. Each image should be less than 5MB.
-          </p>
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors duration-200 ${
+              isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-500"
+            }`}
+          >
+            <input {...getInputProps()} />
+            <Upload className="mx-auto h-12 w-12 text-gray-400" />
+            <p className="mt-2 text-sm text-gray-600">
+              {isDragActive
+                ? "Drop the images here..."
+                : "Drag and drop images here, or click to select files"}
+            </p>
+            <p className="mt-1 text-xs text-gray-500">
+              Maximum 3 images, each up to 5MB
+            </p>
+          </div>
+
+          {featuredImages.length > 0 && (
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              {featuredImages.map((file, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition duration-200"
         >
           {loading ? (
-            <>
-              <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
+            <span className="flex items-center justify-center">
+              <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5" />
               Publishing...
-            </>
+            </span>
           ) : (
             "Publish Blog Post"
           )}

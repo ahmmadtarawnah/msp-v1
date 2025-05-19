@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const Blogs = () => {
+  const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -20,6 +22,10 @@ const Blogs = () => {
     };
     fetchBlogs();
   }, []);
+
+  const handleBlogClick = (blogId) => {
+    navigate(`/blogs/${blogId}`);
+  };
 
   if (loading) return <div className="p-8 text-center">Loading...</div>;
   if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
@@ -46,7 +52,7 @@ const Blogs = () => {
         <div className="flex flex-wrap justify-center gap-8">
           {blogs.length === 0 && <div>No blogs found.</div>}
           {blogs.map((blog) => (
-            <StyledWrapper key={blog._id}>
+            <StyledWrapper key={blog._id} onClick={() => handleBlogClick(blog._id)}>
               <div className="card">
                 <div className="card2">
                   {blog.featuredImages && blog.featuredImages[0] && (

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import MP4Video from "../assets/law-video.mp4";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 // Custom Logo Component with animation
 const LegalAidLogo = ({
@@ -163,6 +164,66 @@ const LegalAidLogo = ({
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [stats, setStats] = useState({ users: 0, lawyers: 0, appointments: 0 });
+  const [topLawyers, setTopLawyers] = useState([]);
+  const [reviews, setReviews] = useState([]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/stats");
+        setStats(res.data);
+      } catch (err) {
+        console.error("Failed to load statistics:", err);
+      }
+    };
+
+    const fetchTopLawyers = async () => {
+      try {
+        // Get all approved lawyers
+        const lawyersRes = await axios.get("http://localhost:5000/api/lawyer-applications/approved");
+        const lawyers = lawyersRes.data;
+
+        // Get ratings for each lawyer
+        const lawyersWithRatings = await Promise.all(
+          lawyers.map(async (lawyer) => {
+            try {
+              const reviewsRes = await axios.get(`http://localhost:5000/api/reviews/lawyer/${lawyer.userId._id}`);
+              const reviews = reviewsRes.data.reviews || [];
+              const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+              const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+              return { ...lawyer, rating: averageRating };
+            } catch (error) {
+              console.error(`Error fetching reviews for lawyer ${lawyer.userId._id}:`, error);
+              return { ...lawyer, rating: 0 };
+            }
+          })
+        );
+
+        // Sort lawyers by rating and get top 6
+        const sortedLawyers = lawyersWithRatings
+          .sort((a, b) => b.rating - a.rating)
+          .slice(0, 6);
+
+        setTopLawyers(sortedLawyers);
+      } catch (error) {
+        console.error("Error fetching top lawyers:", error);
+      }
+    };
+
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/reviews/random-five-star');
+        setReviews(response.data.reviews);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+
+    fetchStats();
+    fetchTopLawyers();
+    fetchReviews();
+  }, []);
 
   useEffect(() => {
     const video = document.getElementById("hero-video");
@@ -192,6 +253,12 @@ const Home = () => {
       behavior: 'smooth'
     });
   };
+
+  const lawyer = topLawyers.find(lawyer => lawyer._id === "specific_lawyer_id");
+  if (lawyer) {
+    const personalPicUrl = `http://localhost:5000/uploads/${lawyer.personalPic}`;
+    // Use personalPicUrl as needed
+  }
 
   return (
     <div className="bg-gray-900">
@@ -248,88 +315,112 @@ const Home = () => {
               Expert Legal Guidance{" "}
               <motion.span 
                 className="text-[#DECEB0]"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
               >
-                When You Need It Most
+                at Your Fingertips
               </motion.span>
             </motion.h1>
-
-            {/* Subheading */}
             <motion.p 
-              className="text-gray-200 text-xl md:text-2xl mb-8 leading-relaxed max-w-2xl"
+              className="text-gray-300 text-lg md:text-xl mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Professional legal consultations tailored to your unique
-              situation. We navigate complex legal matters so you don't have to.
+              Connect with experienced lawyers and get the legal support you need, anytime, anywhere.
             </motion.p>
-
-            {/* Features Highlight */}
-            <motion.div 
-              className="flex flex-wrap gap-6 mb-8"
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <motion.div 
-                className="flex items-center text-[#DECEB0]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <Link
+                to="/Booking"
+                className="inline-block bg-[#DECEB0] text-[#2B3B3A] px-8 py-3 rounded-full font-semibold hover:bg-[#2B3B3A] hover:text-[#DECEB0] transition-colors duration-300"
               >
-                <div className="w-2 h-2 rounded-full bg-[#DECEB0] mr-3"></div>
-                <span className="text-lg font-medium">Experienced Attorneys</span>
-              </motion.div>
-              <motion.div 
-                className="flex items-center text-[#DECEB0]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="w-2 h-2 rounded-full bg-[#DECEB0] mr-3"></div>
-                <span className="text-lg font-medium">Personalized Advice</span>
-              </motion.div>
-              <motion.div 
-                className="flex items-center text-[#DECEB0]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="w-2 h-2 rounded-full bg-[#DECEB0] mr-3"></div>
-                <span className="text-lg font-medium">Affordable Consultations</span>
-              </motion.div>
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-            >
-              <motion.a
-                href="#book"
-                className="bg-[#DECEB0] hover:bg-white text-[#2B3B3A] font-bold text-lg py-3 px-8 rounded-md transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Book a Consultation
-              </motion.a>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to="/become-a-lawyer"
-                  className="bg-transparent hover:bg-[#2B3B3A] text-[#DECEB0] font-semibold text-lg py-3 px-8 rounded-md border-2 border-[#DECEB0] hover:border-[#2B3B3A] transition-all duration-300 inline-flex items-center justify-center"
-                >
-                  Become a Lawyer
-                </Link>
-              </motion.div>
+                Book a Session
+              </Link>
             </motion.div>
           </motion.div>
         </div>
       </div>
+
+      {/* Top Rated Lawyers Section */}
+      <motion.section 
+        id="top-lawyers" 
+        className="py-16 bg-[#2B3B3A]"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <h3 className="text-[#DECEB0] font-medium text-lg mb-1">
+              Our Best Lawyers
+            </h3>
+            <h2 className="text-white text-3xl md:text-4xl font-bold">
+              Top Rated Legal Experts
+            </h2>
+            <div className="w-24 h-1 bg-[#DECEB0] mx-auto mt-4 mb-6"></div>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              Meet our highest-rated legal professionals, recognized for their exceptional service and expertise.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {topLawyers.slice(0, 3).map((lawyer, index) => (
+              <motion.div 
+                key={lawyer._id}
+                className="bg-white rounded-lg shadow-lg overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -10, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
+              >
+                <div className="relative">
+                  <img
+                    src={lawyer.personalPic ? `http://localhost:5000/uploads/${lawyer.personalPic}` : "https://via.placeholder.com/300x200?text=No+Image"}
+                    alt={lawyer.userId.name}
+                    className="w-full h-48 object-cover"
+                    onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/300x200?text=No+Image"; }}
+                  />
+                  <div className="absolute top-4 right-4 bg-[#DECEB0] text-[#2B3B3A] px-3 py-1 rounded-full font-semibold">
+                    {lawyer.rating.toFixed(1)} ★
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-[#2B3B3A] mb-2">
+                    {lawyer.userId.name}
+                  </h3>
+                  <p className="text-[#DECEB0] font-medium mb-4">
+                    {lawyer.specialization}
+                  </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-gray-600">
+                      {lawyer.yearsOfExperience} years experience
+                    </span>
+                    <span className="text-[#2B3B3A] font-semibold">
+                      ${lawyer.hourlyRate}/hr
+                    </span>
+                  </div>
+                  <Link
+                    to={`/lawyer/${lawyer._id}`}
+                    className="block w-full text-center bg-[#2B3B3A] text-[#DECEB0] px-6 py-2 rounded-lg hover:bg-[#1a2a29] transition-colors duration-300"
+                  >
+                    View Profile
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
 
       {/* About Section */}
       <motion.section 
@@ -759,172 +850,59 @@ const Home = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <motion.div 
-              className="bg-white rounded-lg shadow-lg p-6 relative"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-            >
+            {reviews.map((review, index) => (
               <motion.div 
-                className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
+                key={review._id}
+                className="bg-white rounded-lg shadow-lg p-6 relative"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02 }}
               >
-                <LegalAidLogo
-                  size="small"
-                  color="#2B3B3A"
-                  hoverColor="#000000"
-                />
-              </motion.div>
-              <div className="mb-4 mt-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-[#DECEB0]"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
+                <motion.div 
+                  className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  <path d="M10 7l-.94 2H7v4h3l1 2h2V7h-3zm7 0l-.94 2H14v4h3l1 2h2V7h-3z" />
-                </svg>
-              </div>
-              <p className="text-gray-600 mb-6 italic">
-                "LegalAid provided exceptional support during our business
-                incorporation. Their expertise made a complex process
-                straightforward, and their advice saved us from several
-                potential pitfalls."
-              </p>
-              <motion.div 
-                className="flex items-center"
-                whileHover={{ x: 5 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                  <img
-                    src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="Client"
-                    className="w-full h-full object-cover"
+                  <LegalAidLogo
+                    size="small"
+                    color="#2B3B3A"
+                    hoverColor="#000000"
                   />
+                </motion.div>
+                <div className="mb-4 mt-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-[#DECEB0]"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M10 7l-.94 2H7v4h3l1 2h2V7h-3zm7 0l-.94 2H14v4h3l1 2h2V7h-3z" />
+                  </svg>
                 </div>
-                <div>
-                  <h4 className="font-bold text-[#2B3B3A]">Michael Johnson</h4>
-                  <p className="text-gray-500 text-sm">Small Business Owner</p>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Testimonial 2 */}
-            <motion.div 
-              className="bg-white rounded-lg shadow-lg p-6 relative"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <motion.div 
-                className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-              >
-                <LegalAidLogo
-                  size="small"
-                  color="#2B3B3A"
-                  hoverColor="#000000"
-                />
-              </motion.div>
-              <div className="mb-4 mt-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-[#DECEB0]"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
+                <p className="text-gray-600 mb-6 italic">
+                  {review.comment}
+                </p>
+                <motion.div 
+                  className="flex items-center"
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <path d="M10 7l-.94 2H7v4h3l1 2h2V7h-3zm7 0l-.94 2H14v4h3l1 2h2V7h-3z" />
-                </svg>
-              </div>
-              <p className="text-gray-600 mb-6 italic">
-                "During a difficult divorce, the team at LegalAid was
-                compassionate and professional. They guided me through each step
-                and helped me secure a fair settlement that protected my
-                interests and my children's future."
-              </p>
-              <motion.div 
-                className="flex items-center"
-                whileHover={{ x: 5 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                  <img
-                    src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="Client"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#2B3B3A]">Sarah Thompson</h4>
-                  <p className="text-gray-500 text-sm">Family Law Client</p>
-                </div>
+                  <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
+                    <img
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(review.userId.name)}&background=2B3B3A&color=DECEB0`}
+                      alt={review.userId.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-[#2B3B3A]">{review.userId.name}</h4>
+                    <p className="text-gray-500 text-sm">{review.lawyerId.specialization} Client</p>
+                  </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-
-            {/* Testimonial 3 */}
-            <motion.div 
-              className="bg-white rounded-lg shadow-lg p-6 relative"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <motion.div 
-                className="absolute -top-5 left-6 w-10 h-10 bg-[#DECEB0] rounded-full flex items-center justify-center"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-              >
-                <LegalAidLogo
-                  size="small"
-                  color="#2B3B3A"
-                  hoverColor="#000000"
-                />
-              </motion.div>
-              <div className="mb-4 mt-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-[#DECEB0]"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M10 7l-.94 2H7v4h3l1 2h2V7h-3zm7 0l-.94 2H14v4h3l1 2h2V7h-3z" />
-                </svg>
-              </div>
-              <p className="text-gray-600 mb-6 italic">
-                "After my accident, I was overwhelmed with medical bills and
-                insurance claims. The personal injury team at LegalAid fought
-                tirelessly for me and secured a settlement that covered all my
-                expenses and compensated me for my suffering."
-              </p>
-              <motion.div 
-                className="flex items-center"
-                whileHover={{ x: 5 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                  <img
-                    src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                    alt="Client"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h4 className="font-bold text-[#2B3B3A]">David Rodriguez</h4>
-                  <p className="text-gray-500 text-sm">
-                    Personal Injury Client
-                  </p>
-                </div>
-              </motion.div>
-            </motion.div>
+            ))}
           </div>
         </div>
       </motion.section>

@@ -12,9 +12,8 @@ import Loader from "./shared/Loader"; // Changed from loader to Loader
 import { useAuth } from "./context/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 import VideoCall from './components/VideoCall';
-
 import Home from "./pages/Home";
-import ContactUs from "./pages/Contactus";
+import ContactUs from "./pages/ContactUs"; // Fixed casing to match file name
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Booking from "./pages/Booking";
@@ -27,6 +26,7 @@ import LawyerDetails from "./pages/LawyerDetails";
 import About from "./pages/About";
 import LegalServices from "./pages/LegalServices";
 import Blogs from "./pages/Blogs";
+import BlogDetails from "./pages/BlogDetails";
 
 import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 
@@ -51,13 +51,12 @@ function App() {
 
 const AppRoutes = ({ loading }) => {
   const location = useLocation();
-  const { isLoading } = useAuth();
+  const { isLoading, authData } = useAuth();
 
   const isLoginPage = location.pathname === "/Login";
   const isSignupPage = location.pathname === "/Signup";
   const isAdminDashboard = location.pathname.startsWith("/admin-dashboard");
   const isLawyerDashboard = location.pathname.startsWith("/lawyer-dashboard");
-  const isBecomeLawyerPage = location.pathname === "/become-a-lawyer";
 
   if (loading || isLoading) {
     return <Loader />;
@@ -66,9 +65,9 @@ const AppRoutes = ({ loading }) => {
   return (
     <div className="min-h-screen">
       {/* Navbar is hidden on Login, Signup, and Dashboard pages */}
-      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage && <Navbar />}
+      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && <Navbar />}
 
-      <main className={`${!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage ? 'pt-20' : ''}`}>
+      <main className={`${!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard ? 'pt-20' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/Contact" element={<ContactUs />} />
@@ -85,11 +84,12 @@ const AppRoutes = ({ loading }) => {
           <Route path="/legal-services" element={<LegalServices />} />
           <Route path="/video-call/:appointmentId" element={<VideoCall />} />
           <Route path="/Blogs" element={<Blogs />} />
+          <Route path="/blogs/:id" element={<BlogDetails />} />
         </Routes>
       </main>
 
       {/* Footer is hidden on Login, Signup, and Dashboard pages */}
-      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && !isBecomeLawyerPage && <Footer />}
+      {!isLoginPage && !isSignupPage && !isAdminDashboard && !isLawyerDashboard && <Footer />}
     </div>
   );
 };

@@ -290,19 +290,28 @@ const Booking = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="bg-[#2B3B3A] text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-6">Find Your Legal Expert</h1>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Connect with experienced lawyers who specialize in your area of need
+      <div className="relative h-72 bg-[#2B3B3A] overflow-hidden z-10">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#2B3B3A] to-black opacity-90"></div>
+        <div className="absolute inset-0 flex items-center px-8 lg:px-16">
+          <div className="z-10 max-w-7xl mx-auto w-full">
+            <div className="flex items-center space-x-4 mb-4">
+              <LegalAidLogo size="large" />
+              <span className="text-[#DECEB0] font-medium text-lg">
+                LegalAid
+              </span>
+            </div>
+            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-2">
+              Find Your <span className="text-[#DECEB0]">Legal Expert</span>
+            </h1>
+            <p className="text-gray-200 text-xl max-w-2xl">
+              Professional legal expertise tailored to your specific needs
             </p>
           </div>
         </div>
       </div>
 
       {/* Search and Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 relative">
         <div className="bg-white rounded-lg shadow-xl p-6 mb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>

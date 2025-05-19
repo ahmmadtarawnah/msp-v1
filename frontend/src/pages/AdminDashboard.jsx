@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import AdminSidebar from "../components/AdminSidebar";
 import LawyerApplications from "../components/LawyerApplications";
 import AddBlog from "../components/AddBlog";
+import AdminBlogs from "../components/AdminBlogs";
 import UserManagement from "../components/UserManagement";
 import AdminContacts from "../components/AdminContacts";
 import { Pie, Bar } from 'react-chartjs-2';
@@ -156,21 +157,6 @@ const AdminDashboard = () => {
 
       {/* Main content area with responsive adjustments */}
       <div className="flex-1 w-full md:ml-64">
-        {/* Top Navigation Bar */}
-        <div className="bg-white shadow-sm sticky top-0 z-10">
-          <div className="flex justify-between items-center px-4 sm:px-6 py-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-[#2B3B3A]">
-              Admin Dashboard
-            </h1>
-            <button
-              onClick={handleLogout}
-              className="bg-[#2B3B3A] hover:bg-[#1a2a29] text-white font-medium py-2 px-3 sm:px-4 rounded-lg transition-colors duration-300 text-sm sm:text-base"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-
         {/* Main Content */}
         <div className="p-4 sm:p-6">
           <Routes>
@@ -361,6 +347,7 @@ const AdminDashboard = () => {
             <Route path="/applications" element={<LawyerApplications />} />
             <Route path="/users" element={<UserManagement />} />
             <Route path="/contacts" element={<AdminContacts />} />
+            <Route path="/blogs" element={<AdminBlogs />} />
             <Route path="/add-blog" element={<AddBlog />} />
           </Routes>
         </div>

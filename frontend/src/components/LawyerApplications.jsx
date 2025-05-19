@@ -209,7 +209,9 @@ const LawyerApplications = () => {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">{application.userId?.name || 'Unknown User'}</div>
-                            <div className="text-xs text-gray-500">{application.userId?.email || 'No email provided'}</div>
+                            {application.userId?.email && (
+                              <div className="text-xs text-gray-500">{application.userId.email}</div>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -304,7 +306,7 @@ const LawyerApplications = () => {
                       </span>
                     </div>
                     <div className="mt-4 flex justify-between items-center">
-                      <p className="text-xs text-gray-500 truncate">{application.userId?.email || 'No email provided'}</p>
+                      <p className="text-xs text-gray-500 truncate">{application.userId?.email && application.userId.email}</p>
                       <div className="flex space-x-2">
                         <button
                           onClick={() => setSelectedApplication(application)}
@@ -389,7 +391,7 @@ const LawyerApplications = () => {
                         </h4>
                         <div className="mt-1 flex flex-col sm:flex-row sm:items-center text-sm text-gray-500 gap-2 sm:gap-4">
                           <p>
-                            <span className="font-medium">Email:</span> {selectedApplication.userId?.email || 'Not provided'}
+                            <span className="font-medium">Email:</span> {selectedApplication.userId?.email && selectedApplication.userId.email}
                           </p>
                           <p>
                             <span className="font-medium">Bar Number:</span> {selectedApplication.barNumber || 'Not provided'}

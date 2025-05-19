@@ -5,6 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Navbar from "../shared/Navbar";
 import Footer from "../shared/Footer";
+import Loader from "../shared/Loader";
 
 const LegalAidLogo = ({ size = "normal", color = "#DECEB0", hoverColor = "#ffffff" }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -248,16 +249,8 @@ const BecomeAlawyer = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#2B3B3A] to-[#1A2A29]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#DECEB0]"></div>
-      </div>
-    );
-  }
-
-  if (!authData) {
-    return null;
+  if (loading || isLoading) {
+    return <Loader />;
   }
 
   return (

@@ -15,6 +15,7 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const blogRoutes = require("./routes/blogRoutes");
+const blogCommentRoutes = require('./routes/blogCommentRoutes');
 
 const app = express();
 app.use(express.json());
@@ -50,6 +51,7 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/blog-comments", blogCommentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

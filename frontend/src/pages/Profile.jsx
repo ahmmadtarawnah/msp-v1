@@ -3,6 +3,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import PaymentCard from "../components/PaymentCard";
+import VideoCallButton from "../components/VideoCallButton";
 
 // Reusing the LegalAidLogo component from Home page
 const LegalAidLogo = ({
@@ -321,48 +323,31 @@ const Profile = () => {
               </div>
             </div>
 
-            <div class="space-y-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                <div class="relative">
-                  <input id="cardNumber" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="1234 5678 9012 3456" maxlength="19">
-                  <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                  </div>
+            <div class="flex flex-col justify-around bg-gray-800 p-4 border border-white border-opacity-30 rounded-lg shadow-md max-w-xs mx-auto">
+              <div class="flex flex-row items-center justify-between mb-3">
+                <input class="w-full h-10 border-none outline-none text-sm bg-gray-800 text-white font-semibold caret-orange-500 pl-2 mb-3 flex-grow" type="text" name="cardName" id="cardName" placeholder="Full Name" />
+                <div class="flex items-center justify-center relative w-14 h-9 bg-gray-800 border border-white border-opacity-20 rounded-md">
+                  <svg class="text-white fill-current" xmlns="http://www.w3.org/2000/svg" width={30} height={30} viewBox="0 0 48 48">
+                    <path fill="#ff9800" d="M32 10A14 14 0 1 0 32 38A14 14 0 1 0 32 10Z" />
+                    <path fill="#d50000" d="M16 10A14 14 0 1 0 16 38A14 14 0 1 0 16 10Z" />
+                    <path fill="#ff3d00" d="M18,24c0,4.755,2.376,8.95,6,11.48c3.624-2.53,6-6.725,6-11.48s-2.376-8.95-6-11.48 C20.376,15.05,18,19.245,18,24z" />
+                  </svg>
                 </div>
               </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Cardholder Name</label>
-                <input id="cardName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="John Doe">
-              </div>
-
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                  <input id="expiryDate" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="MM/YY" maxlength="5">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                  <div class="relative">
-                    <input id="cvv" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#DECEB0] focus:border-transparent" placeholder="123" maxlength="3">
-                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                    </div>
-                  </div>
+              <div class="flex flex-col space-y-3">
+                <input class="w-full h-10 border-none outline-none text-sm bg-gray-800 text-white font-semibold caret-orange-500 pl-2" type="text" name="cardNumber" id="cardNumber" placeholder="0000 0000 0000 0000" />
+                <div class="flex flex-row justify-between">
+                  <input class="w-full h-10 border-none outline-none text-sm bg-gray-800 text-white font-semibold caret-orange-500 pl-2" type="text" name="expiryDate" id="expiryDate" placeholder="MM/AA" />
+                  <input class="w-full h-10 border-none outline-none text-sm bg-gray-800 text-white font-semibold caret-orange-500 pl-2" type="text" name="cvv" id="cvv" placeholder="CVV" />
                 </div>
               </div>
+            </div>
 
-              <div class="flex items-center space-x-2 text-sm text-gray-500">
-                <svg class="w-5 h-5 text-[#DECEB0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span>Your payment information is secure and encrypted</span>
-              </div>
+            <div class="flex items-center space-x-2 text-sm text-gray-500">
+              <svg class="w-5 h-5 text-[#DECEB0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span>Your payment information is secure and encrypted</span>
             </div>
           </div>
         `,
@@ -792,20 +777,10 @@ const Profile = () => {
                         </div>
                         <div className="appointment-actions">
                           {appointment.status === 'confirmed' && (
-                            <button
-                              className="btn btn-primary"
-                              onClick={() => handlePayment(appointment._id)}
-                            >
-                              Complete Payment
-                            </button>
+                            <PaymentCard onClick={() => handlePayment(appointment._id)} />
                           )}
                           {appointment.status === 'completed' && appointment.videoCallStatus === 'not_started' && (
-                            <button
-                              className="btn btn-success"
-                              onClick={() => handleStartVideoCall(appointment._id)}
-                            >
-                              Start Video Call
-                            </button>
+                            <VideoCallButton onClick={() => handleStartVideoCall(appointment._id)} label="Start Video Call" />
                           )}
                           {appointment.status === 'completed' && appointment.videoCallStatus === 'in_progress' && (
                             <button
