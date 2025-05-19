@@ -6,8 +6,8 @@ const { createReview, getLawyerReviews, deleteReview, getRandomFiveStarReviews }
 // Create a new review
 router.post('/', authenticate, createReview);
 
-// Get reviews for a specific lawyer
-router.get('/lawyer/:lawyerId', authenticate, getLawyerReviews);
+// Get reviews for a specific lawyer (removed authentication requirement)
+router.get('/lawyer/:lawyerId', getLawyerReviews);
 
 // Get random 5-star reviews
 router.get('/random-five-star', getRandomFiveStarReviews);

@@ -60,7 +60,7 @@ const getLawyerReviews = async (req, res) => {
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
     const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
 
-    // Ensure each review has a name
+    // Ensure each review has a name and handle anonymous reviews
     const formattedReviews = reviews.map(review => ({
       ...review.toObject(),
       userId: {
