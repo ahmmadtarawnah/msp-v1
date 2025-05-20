@@ -70,7 +70,7 @@ A role-based platform offering:
 ---
 
 ## 📚 Documentation
-- [Full Technical Specifications]([./Legal_Aid_Project_Documentation.pdf](https://drive.google.com/file/d/16kNVgia864K9-65rnpGOTF5Vfk71dfYW/view?usp=sharing))
+- [Full Technical Specifications](https://drive.google.com/file/d/16kNVgia864K9-65rnpGOTF5Vfk71dfYW/view?usp=sharing)
 
 
 ---
