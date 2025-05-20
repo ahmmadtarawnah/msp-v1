@@ -77,7 +77,7 @@ A role-based platform offering:
 
 ## 🎨 Design Mockups
 View the complete UI/UX design in Figma:  
-[![Figma](https://www.figma.com/design/mrP9Z8ItP3yFPXJ9GaMi3l/Untitled?node-id=0-1&p=f&t=k437oZXdqsuJvJ1Z-0) <!-- Replace with actual Figma link -->
+[![Figma](https://www.figma.com/design/mrP9Z8ItP3yFPXJ9GaMi3l/Untitled?node-id=0-1&t=k437oZXdqsuJvJ1Z-1) <!-- Replace with actual Figma link -->
 
 Key screens designed:
 - Landing page
