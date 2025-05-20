@@ -53,7 +53,6 @@ A role-based platform offering:
 **Frontend**  
 ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react) 
 
-*HTML5, CSS3, JavaScript*
 
 **Backend**  
 ![Node](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs) 
@@ -71,9 +70,8 @@ A role-based platform offering:
 ---
 
 ## 📚 Documentation
-- [Full Technical Specifications](./Legal_Aid_Project_Documentation.pdf)
-- [API Reference](#) <!-- Add link when available -->
-- [Database Schema](#) <!-- Add link when available -->
+- [Full Technical Specifications]([./Legal_Aid_Project_Documentation.pdf](https://drive.google.com/file/d/16kNVgia864K9-65rnpGOTF5Vfk71dfYW/view?usp=sharing))
+
 
 ---
 
