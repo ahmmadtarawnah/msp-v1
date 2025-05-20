@@ -9,7 +9,8 @@ const {
   getLawyerAppointments,
   getUserAppointments,
   startVideoCall,
-  endVideoCall
+  endVideoCall,
+  getLawyerStatistics
 } = require('../controllers/appointmentController');
 
 // Create a new appointment
@@ -33,5 +34,8 @@ router.put('/:id/status', authenticate, updateAppointmentStatus);
 // Video call routes
 router.post('/:id/start-call', authenticate, startVideoCall);
 router.post('/:id/end-call', authenticate, endVideoCall);
+
+// Statistics route
+router.get('/lawyer/:lawyerId/statistics', authenticate, getLawyerStatistics);
 
 module.exports = router; 

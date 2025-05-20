@@ -27,6 +27,7 @@ import About from "./pages/About";
 import LegalServices from "./pages/LegalServices";
 import Blogs from "./pages/Blogs";
 import BlogDetails from "./pages/BlogDetails";
+import FAQ from "./pages/FAQ"; // Import FAQ page
 
 import { AuthProvider } from "./context/AuthContext"; // Import the AuthProvider
 
@@ -85,6 +86,7 @@ const AppRoutes = ({ loading }) => {
           <Route path="/video-call/:appointmentId" element={<VideoCall />} />
           <Route path="/Blogs" element={<Blogs />} />
           <Route path="/blogs/:id" element={<BlogDetails />} />
+          <Route path="/faq" element={<FAQ />} />
         </Routes>
       </main>
 

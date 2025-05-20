@@ -76,7 +76,7 @@ const VideoCall = () => {
     };
 
     fetchAppointment();
-
+  
     // Auto-hide controls after inactivity
     let timeout;
     const handleMouseMove = () => {

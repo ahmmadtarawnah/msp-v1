@@ -489,7 +489,7 @@ const Home = () => {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
               >
-                About Us
+                Who We Are
               </motion.h3>
               <motion.h2 
                 className="text-[#2B3B3A] text-3xl font-bold mb-6"
@@ -898,7 +898,7 @@ const Home = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-[#2B3B3A]">{review.userId.name}</h4>
-                    <p className="text-gray-500 text-sm">{review.lawyerId.specialization} Client</p>
+                    <p className="text-gray-500 text-sm">{review.lawyerId?.specialization || 'Legal'} Client</p>
                   </div>
                 </motion.div>
               </motion.div>
@@ -1071,14 +1071,17 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.7 }}
             viewport={{ once: true }}
           >
-            <motion.a
-              href="#more-faqs"
-              className="inline-block bg-[#2B3B3A] text-[#DECEB0] px-8 py-3 rounded-full font-medium hover:bg-[#1a2a29] transition-colors duration-300"
+            <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              View More FAQs
-            </motion.a>
+              <Link
+                to="/faq"
+                className="inline-block bg-[#2B3B3A] text-[#DECEB0] px-8 py-3 rounded-full font-medium hover:bg-[#1a2a29] transition-colors duration-300"
+              >
+                View More FAQs
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </motion.section>

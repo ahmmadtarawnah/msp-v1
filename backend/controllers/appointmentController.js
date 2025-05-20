@@ -227,7 +227,10 @@ const getUserAppointments = async (req, res) => {
       .sort({ createdAt: -1 });
 
     // Get lawyer applications separately to avoid population issues
-    const lawyerIds = appointments.map(app => app.lawyerId._id);
+    const lawyerIds = appointments
+      .filter(app => app.lawyerId && app.lawyerId._id)
+      .map(app => app.lawyerId._id);
+
     const lawyerApplications = await LawyerApplication.find({
       userId: { $in: lawyerIds },
       status: 'approved'
@@ -235,14 +238,21 @@ const getUserAppointments = async (req, res) => {
 
     // Create a map of lawyer applications for easy lookup
     const lawyerApplicationMap = lawyerApplications.reduce((map, app) => {
-      map[app.userId.toString()] = app;
+      if (app && app.userId) {
+        map[app.userId.toString()] = app;
+      }
       return map;
     }, {});
 
     // Attach lawyer applications to appointments
     const appointmentsWithApplications = appointments.map(appointment => {
+      if (!appointment.lawyerId) {
+        return appointment.toObject();
+      }
+
       const lawyerId = appointment.lawyerId._id.toString();
       const application = lawyerApplicationMap[lawyerId];
+      
       return {
         ...appointment.toObject(),
         lawyerId: {
@@ -255,7 +265,7 @@ const getUserAppointments = async (req, res) => {
     res.status(200).json(appointmentsWithApplications);
   } catch (error) {
     console.error('Error fetching user appointments:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Error fetching appointments. Please try again.' });
   }
 };
 
@@ -324,6 +334,75 @@ const endVideoCall = async (req, res) => {
   }
 };
 
+// Add this new function to get lawyer statistics
+const getLawyerStatistics = async (req, res) => {
+  try {
+    const lawyerId = req.params.lawyerId;
+
+    // Get lawyer's rate information
+    const lawyerApplication = await LawyerApplication.findOne({
+      userId: lawyerId,
+      status: 'approved'
+    });
+
+    if (!lawyerApplication) {
+      return res.status(404).json({ message: 'Lawyer not found or not approved' });
+    }
+
+    // Get all appointments for the lawyer
+    const appointments = await Appointment.find({ lawyerId })
+      .populate('userId', 'name')
+      .populate('lawyerId', 'name')
+      .sort({ createdAt: -1 });
+
+    // Calculate statistics
+    const totalAppointments = appointments.length;
+    const confirmedAppointments = appointments.filter(app => app.status === 'confirmed').length;
+    const completedAppointments = appointments.filter(app => app.status === 'completed');
+    const pendingAppointments = appointments.filter(app => app.status === 'pending').length;
+    const cancelledAppointments = appointments.filter(app => app.status === 'cancelled').length;
+
+    // Calculate earnings from completed appointments based on duration
+    const totalEarnings = completedAppointments.reduce((sum, appointment) => {
+      // Calculate earnings based on duration and rates
+      const rate = appointment.duration === 60 
+        ? lawyerApplication.hourlyRate 
+        : lawyerApplication.halfHourlyRate;
+      return sum + rate;
+    }, 0);
+
+    // Get recent appointments (last 5)
+    const recentAppointments = appointments.slice(0, 5).map(app => ({
+      id: app._id,
+      date: app.date,
+      time: app.time,
+      status: app.status,
+      clientName: app.userId?.name || 'Unknown Client',
+      duration: app.duration,
+      rate: app.duration === 60 ? lawyerApplication.hourlyRate : lawyerApplication.halfHourlyRate
+    }));
+
+    res.json({
+      totalAppointments,
+      acceptedAppointments: confirmedAppointments,
+      pendingAppointments,
+      cancelledAppointments,
+      totalEarnings,
+      recentAppointments,
+      rates: {
+        hourlyRate: lawyerApplication.hourlyRate,
+        halfHourlyRate: lawyerApplication.halfHourlyRate
+      }
+    });
+  } catch (error) {
+    console.error('Error getting lawyer statistics:', error);
+    res.status(500).json({ 
+      message: 'Error getting lawyer statistics',
+      error: error.message 
+    });
+  }
+};
+
 module.exports = {
   createAppointment,
   getAppointments,
@@ -332,5 +411,6 @@ module.exports = {
   getLawyerAppointments,
   getUserAppointments,
   startVideoCall,
-  endVideoCall
+  endVideoCall,
+  getLawyerStatistics
 }; 

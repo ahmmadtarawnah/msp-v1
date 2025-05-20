@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import LawyerSidebar from "../components/LawyerSidebar";
 import Loader from "../shared/Loader";
 import LawyerReviews from "../components/LawyerReviews";
+import LawyerStatistics from "../components/LawyerStatistics";
 
 const LawyerDashboard = () => {
   const { authData } = useAuth();
@@ -190,8 +191,10 @@ const LawyerDashboard = () => {
           <Routes>
             <Route path="/" element={<Outlet />} />
             <Route path="reviews" element={<LawyerReviews />} />
+            <Route path="statistics" element={<LawyerStatistics />} />
           </Routes>
-          {!location.pathname.includes('/reviews') && (
+          {/* Only show the profile section if not on statistics page */}
+          {!location.pathname.includes('/reviews') && !location.pathname.includes('/statistics') && (
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               {/* Header Section */}
               <div className="bg-[#3A4B4A] p-4 sm:p-6 text-white">

@@ -25,7 +25,7 @@ const ContactUs = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/contact-us", formData);
+      await axios.post("http://localhost:5000/api/contact", formData);
       setSubmitted(true);
       setFormData({
         name: "",
