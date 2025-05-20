@@ -28,7 +28,7 @@ A role-based platform offering:
 - Lawyer dashboards for appointment management
 - Admin controls for user/content oversight
 
-[View Full Project Documentation](./Legal_Aid_Project_Documentation.pdf)
+[View Full Project Breif](https://drive.google.com/file/d/1TTrwBfN-up_c3B8AQEXn0HSZwLQjjlcY/view?usp=sharing)
 
 ---
 
@@ -77,7 +77,7 @@ A role-based platform offering:
 
 ## 🎨 Design Mockups
 View the complete UI/UX design in Figma:  
-[![Figma](https://img.shields.io/badge/Figma-Design_Mockups-FF7262?style=flat&logo=figma)](https://figma.com/your-link-here) <!-- Replace with actual Figma link -->
+[![Figma](https://www.figma.com/design/mrP9Z8ItP3yFPXJ9GaMi3l/Untitled?node-id=0-1&p=f&t=k437oZXdqsuJvJ1Z-0) <!-- Replace with actual Figma link -->
 
 Key screens designed:
 - Landing page
@@ -89,7 +89,7 @@ Key screens designed:
 
 ## 🚀 Getting Started
 ### Prerequisites
-- Node.js v16+ / Python 3.8+
-- MongoDB/MySQL installed
-- Stripe/PayPal developer account
+- Node.js v16+ 
+- MongoDB
+
 
